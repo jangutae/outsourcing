@@ -27,7 +27,7 @@ public class UserService {
 
             // 탈퇴한 회원 회원가입 시 예외처리
             if (AccountStatus.NOT_USE.equals(findUser.get().getState())) {
-                throw new CustomException(UserErrorCode.NOT_FOUND);
+                throw new CustomException(UserErrorCode.DEACTIVATED_USER);
             }
 
             throw new CustomException(UserErrorCode.DUPLICATED_EMAIL);
