@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,8 @@ public class MenuService {
             throw new CustomException(MenuErrorCode.NOT_ACCESS);
         }
 
-        Store store = storeRepository.findByOrElseThrow(storeId);
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
+
         Menu menu = new Menu(user, store, requestDto.menuName(), requestDto.price(), StateType.ORDER_POSSIBLE);
         menuRepository.save(menu);
 
@@ -45,20 +47,17 @@ public class MenuService {
 
     @Transactional
     public MenuResponseDto updatedMenu(Long userId, Long storeId, Long menuId,  UpdateMenuRequestDto requestDto) {
-        Menu menu = menuRepository.findMenuById(userId, storeId, menuId);
+        User user = userRepository.findByIdOrElseThrows(userId);
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
+        Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
 
-        if (!menu.getUser().getId().equals(userId)) {
+        if (!user.getId().equals(userId)) {
             throw new CustomException(MenuErrorCode.NOT_ACCESS);
         }
 
-        if (!menu.getStore().getId().equals(storeId)) {
+        if (!store.getId().equals(storeId)) {
             throw new CustomException(MenuErrorCode.NOT_ACCESS);
         }
-
-        if () {
-            throw new CustomException(MenuErrorCode.NOT_FOUND);
-        }
-
 
         menu.update(requestDto.menuName(), requestDto.price());
         menuRepository.save(menu);
@@ -67,12 +66,22 @@ public class MenuService {
     }
 
     public String updatedState(Long userId, Long storeId, Long menuId) {
-        Menu menu = menuRepository.findMenuById(userId, storeId, menuId);
+        User user = userRepository.findByIdOrElseThrows(userId);
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
+        Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
+
+        if (!user.getId().equals(userId)) {
+            throw new CustomException(MenuErrorCode.NOT_ACCESS);
+        }
+
+        if (!store.getId().equals(storeId)) {
+            throw new CustomException(MenuErrorCode.NOT_ACCESS);
+        }
 
         if (menu.getState().equals(StateType.ORDER_POSSIBLE)) {
             menu.setState(StateType.DELETED);
         }
-
+        menuRepository.save(menu);
         return menu.getState().toString();
     }
 
