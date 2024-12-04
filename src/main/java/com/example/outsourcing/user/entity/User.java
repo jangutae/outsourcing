@@ -1,5 +1,6 @@
 package com.example.outsourcing.user.entity;
 
+import com.example.outsourcing.common.constants.AccountStatus;
 import com.example.outsourcing.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -28,10 +29,19 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    public User(String name, String email, String password) {
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AccountStatus state;
+
+    public User(String name, String email, String password, AccountStatus state) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.state = state;
+    }
+
+    public void disableUserAccount(AccountStatus accountStatus) {
+        this.state = accountStatus;
     }
 
 }

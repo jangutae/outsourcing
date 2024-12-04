@@ -25,7 +25,7 @@ public class LoginFilter implements Filter {
         if(!isWhiteList(requestURI)){
             HttpSession session = httpRequest.getSession(false);
 
-            if (session == null || session.getAttribute("USER_ID") == null) {
+            if (session == null || session.getAttribute("id") == null) {
 
                 log.warn("미인증 사용자 요청: {}", requestURI);
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
