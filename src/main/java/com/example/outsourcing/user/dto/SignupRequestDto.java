@@ -1,6 +1,8 @@
 package com.example.outsourcing.user.dto;
 
+import com.example.outsourcing.common.constants.AccountRole;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,4 +21,7 @@ public class SignupRequestDto {
     @Size(min = 8, message = "비밀번호는 8글자 이상으로 입력해주세요.")
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$", message = "비밀번호는 대소문자 포함 영문 + 숫자 + 특수문자 최소 1글자씩 입력해주세요.")
     private String password;
+
+    @NotNull(message = "올바른 역할을 입력해주세요")
+    private AccountRole role;
 }
