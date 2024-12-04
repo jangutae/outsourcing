@@ -5,6 +5,7 @@ import com.example.outsourcing.store.dto.OpenedStoreResponseDto;
 import com.example.outsourcing.store.dto.StoreDetailInfoResponseDto;
 import com.example.outsourcing.store.dto.StoreInfoResponseDto;
 import com.example.outsourcing.store.service.StoreService;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -44,11 +45,26 @@ public class StoreController {
         List<StoreInfoResponseDto> storeInfoResponseDtoList = storeService.searchStoreList(text);
         return new ResponseEntity<>(storeInfoResponseDtoList,HttpStatus.OK);
     }
-
+    // 가게 상세 조회
     @GetMapping("/{id}")
-    public ResponseEntity<StoreDetailInfoResponseDto> StoreDetailInfoResponseDto(@PathVariable Long id) {
+    public ResponseEntity<StoreDetailInfoResponseDto> storeDetailInfoResponseDto(@PathVariable Long id) {
         StoreDetailInfoResponseDto storeDetailInfoResponseDto = storeService.showDetailStore(id);
         return new ResponseEntity<>(storeDetailInfoResponseDto,HttpStatus.OK);
 
+    }
+    // 가게 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateStoreInfo(@PathVariable Long id , @RequestBody OpenedStoreResponseDto openedStoreResponseDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("id");
+        storeService.updateStoreInfo(userId,id,openedStoreResponseDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    // 가게 폐업
+    @DeleteMapping("/{id}")
+    public void closeStore(@PathVariable Long id,HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("id");
+        storeService.close(id,userId);
     }
 }

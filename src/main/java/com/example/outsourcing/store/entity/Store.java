@@ -3,6 +3,7 @@ package com.example.outsourcing.store.entity;
 import com.example.outsourcing.common.entity.BaseEntity;
 import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.store.dto.OpenedStoreRequestDto;
+import com.example.outsourcing.store.dto.OpenedStoreResponseDto;
 import com.example.outsourcing.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -45,5 +46,16 @@ public class Store extends BaseEntity {
     }
     public void updateMenu(List<Menu> menuList){
         this.menuList=menuList;
+    }
+
+    public void updateInfo(OpenedStoreResponseDto openedStoreResponseDto) {
+        this.storeName=openedStoreResponseDto.getStoreName();
+        this.minPrice=openedStoreResponseDto.getMinPrice();
+        this.openTime=openedStoreResponseDto.getOpenTime();
+        this.closeTime=openedStoreResponseDto.getCloseTime();
+    }
+
+    public void close() {
+        this.state=State.CLOSED;
     }
 }

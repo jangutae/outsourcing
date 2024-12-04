@@ -1,5 +1,6 @@
 package com.example.outsourcing.store.service;
 
+import com.example.outsourcing.common.exception.CustomException;
 import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.menu.service.MenuService;
 import com.example.outsourcing.store.dto.OpenedStoreRequestDto;
@@ -59,6 +60,20 @@ public class StoreService {
         Store store = storeRepository.findByAndStateOrElseThrow(id, State.OPENED);
         store.updateMenu(menuList);
         return new StoreDetailInfoResponseDto(store);
+
+    }
+    @Transactional
+    public void updateStoreInfo(Long userId, Long id, OpenedStoreResponseDto openedStoreResponseDto) {
+        userService.findOwnerById(userId);
+        Store store = storeRepository.findById(id).get();
+        store.updateInfo(openedStoreResponseDto);
+
+    }
+    @Transactional
+    public void close(Long id, Long userId) {
+        userService.findOwnerById(userId);
+        Store store = storeRepository.findById(id).get();
+        store.close();
 
     }
 }
