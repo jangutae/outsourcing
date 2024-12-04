@@ -1,5 +1,6 @@
 package com.example.outsourcing.user.entity;
 
+import com.example.outsourcing.common.constants.AccountRole;
 import com.example.outsourcing.common.constants.AccountStatus;
 import com.example.outsourcing.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -31,12 +32,17 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    private AccountRole role;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AccountStatus state;
 
-    public User(String name, String email, String password, AccountStatus state) {
+    public User(String name, String email, String password, AccountRole role, AccountStatus state) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
         this.state = state;
     }
 

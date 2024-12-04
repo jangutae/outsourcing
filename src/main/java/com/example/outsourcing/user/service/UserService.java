@@ -1,5 +1,6 @@
 package com.example.outsourcing.user.service;
 
+import com.example.outsourcing.common.constants.AccountRole;
 import com.example.outsourcing.common.constants.AccountStatus;
 import com.example.outsourcing.common.exception.CustomException;
 import com.example.outsourcing.common.exception.UserErrorCode;
@@ -18,7 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public  void singUp(String name, String email, String password) {
+    public  void singUp(String name, String email, String password, AccountRole role) {
 
         Optional<User> findUser = userRepository.findByEmail(email);
 
@@ -34,7 +35,7 @@ public class UserService {
 
         String hashedPassword = PasswordEncoder.encode(password);
 
-        User user = new User(name, email, hashedPassword, AccountStatus.USE);
+        User user = new User(name, email, hashedPassword, role, AccountStatus.USE);
 
         userRepository.save(user);
     }
