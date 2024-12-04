@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,6 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
-
 
     public MenuResponseDto createdMenu(Long userId, Long storeId, CreateMenuRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
@@ -92,9 +90,9 @@ public class MenuService {
         List<Menu> allByStoreId = menuRepository.findAllByStoreId(storeId);
         List<Menu> withoutDelete = new ArrayList<>();
 
-        for (int i = 0; i < allByStoreId.size(); i++) {
-            if (allByStoreId.get(i).getState().equals(StateType.ORDER_POSSIBLE)) {
-                withoutDelete.add(allByStoreId.get(i));
+        for (Menu menu : allByStoreId) {
+            if (menu.getState().equals(StateType.ORDER_POSSIBLE)) {
+                withoutDelete.add(menu);
             }
         }
         return withoutDelete;
