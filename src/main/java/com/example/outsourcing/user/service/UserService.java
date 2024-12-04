@@ -61,4 +61,8 @@ public class UserService {
         User findUser = userRepository.findByIdOrElseThrows(id);
         findUser.disableUserAccount(AccountStatus.NOT_USE);
     }
+
+    public User findOwnerById(Long id) {
+        return userRepository.findUserByRoleAndIdOrElseThrow(AccountRole.BOSS,id);
+    }
 }
