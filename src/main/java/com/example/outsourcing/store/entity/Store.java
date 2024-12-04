@@ -1,11 +1,15 @@
 package com.example.outsourcing.store.entity;
 
 import com.example.outsourcing.common.entity.BaseEntity;
+import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.store.dto.OpenedStoreRequestDto;
 import com.example.outsourcing.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "store")
@@ -28,7 +32,9 @@ public class Store extends BaseEntity {
     private String closeTime;
     @Enumerated(EnumType.STRING)
     private State state;
-
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Menu> menuList = new ArrayList<>();
+    // todo
     public Store(User user, OpenedStoreRequestDto openedStoreRequestDto) {
         this.user = user;
         this.storeName = openedStoreRequestDto.getStoreName();
@@ -37,6 +43,7 @@ public class Store extends BaseEntity {
         this.closeTime = openedStoreRequestDto.getCloseTime();
         this.state = State.OPENED;
     }
-    /*@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Menu> menuList = new ArrayList<>();*/
+    public void updateMenu(List<Menu> menuList){
+        this.menuList=menuList;
+    }
 }
