@@ -39,7 +39,7 @@ public class MenuService {
 
         Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
 
-        Menu menu = new Menu(user, store, requestDto.menuName(), requestDto.price(), StateType.ORDER_POSSIBLE);
+        Menu menu = new Menu(store, requestDto.menuName(), requestDto.price(), StateType.ORDER_POSSIBLE);
         menuRepository.save(menu);
 
         return MenuResponseDto.toDto(menu);
