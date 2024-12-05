@@ -33,10 +33,11 @@ public class Store extends BaseEntity {
     private String closeTime;
     @Enumerated(EnumType.STRING)
     private State state;
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
-    // todo
+
     public Store(User user, OpenedStoreRequestDto openedStoreRequestDto) {
+
         this.user = user;
         this.storeName = openedStoreRequestDto.getStoreName();
         this.minPrice = openedStoreRequestDto.getMinPrice();
@@ -44,18 +45,17 @@ public class Store extends BaseEntity {
         this.closeTime = openedStoreRequestDto.getCloseTime();
         this.state = State.OPENED;
     }
-    public void updateMenu(List<Menu> menuList){
-        this.menuList=menuList;
-    }
 
     public void updateInfo(OpenedStoreResponseDto openedStoreResponseDto) {
-        this.storeName=openedStoreResponseDto.getStoreName();
-        this.minPrice=openedStoreResponseDto.getMinPrice();
-        this.openTime=openedStoreResponseDto.getOpenTime();
-        this.closeTime=openedStoreResponseDto.getCloseTime();
+
+        this.storeName = openedStoreResponseDto.getStoreName();
+        this.minPrice = openedStoreResponseDto.getMinPrice();
+        this.openTime = openedStoreResponseDto.getOpenTime();
+        this.closeTime = openedStoreResponseDto.getCloseTime();
     }
 
     public void close() {
-        this.state=State.CLOSED;
+
+        this.state = State.CLOSED;
     }
 }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class OpenedStoreResponseDto {
+
     private Long storeId;
     private Long userId;
     private String storeName;
@@ -15,6 +16,7 @@ public class OpenedStoreResponseDto {
     private String closeTime;
 
     public OpenedStoreResponseDto(Store store) {
+
         this.storeId = store.getId();
         this.userId = store.getUser().getId();
         this.storeName = store.getStoreName();

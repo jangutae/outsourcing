@@ -11,13 +11,9 @@ public class StoreInfoResponseDto {
     private String storeName;
 
     public StoreInfoResponseDto(Store store) {
-        this.storeId=store.getId();
-        this.storeName=store.getStoreName();
-    }
 
-    public StoreInfoResponseDto(Long storeId, String storeName) {
-        this.storeId = storeId;
-        this.storeName = storeName;
+        this.storeId = store.getId();
+        this.storeName = store.getStoreName();
     }
 
     public static StoreInfoResponseDto toDto(Store store) {
