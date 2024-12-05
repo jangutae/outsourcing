@@ -1,29 +1,28 @@
 package com.example.outsourcing.store.dto;
 
+import com.example.outsourcing.menu.dto.MenuResponseDto;
 import com.example.outsourcing.store.entity.Store;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
-@NoArgsConstructor
-public class OpenedStoreResponseDto {
-
-    private Long storeId;
-    private Long userId;
+public class StoreDetailInfoResponseDto {
+    private Long id;
     private String storeName;
+    private List<MenuResponseDto> menuList;
     private Integer minPrice;
     private String openTime;
     private String closeTime;
 
-    public OpenedStoreResponseDto(Store store) {
+    public StoreDetailInfoResponseDto(Store store, List<MenuResponseDto> list) {
 
-        this.storeId = store.getId();
-        this.userId = store.getUser().getId();
+        this.id = store.getId();
         this.storeName = store.getStoreName();
+        this.menuList = list;
         this.minPrice = store.getMinPrice();
         this.openTime = store.getOpenTime();
         this.closeTime = store.getCloseTime();
 
     }
-
 }
