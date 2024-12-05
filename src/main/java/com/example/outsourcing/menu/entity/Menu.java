@@ -31,7 +31,7 @@ public class Menu {
     @Column(name = "menu_name", nullable = false)
     private String menuName;
 
-    @Column(nullable = false)
+    @Column(name = "price", nullable = false)
     private Integer price;
 
     @Setter
