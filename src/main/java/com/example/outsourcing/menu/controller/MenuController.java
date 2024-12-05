@@ -21,6 +21,7 @@ public class MenuController {
 
     private final MenuService menuService;
 
+    // 메뉴 생성
     @PostMapping("/menus")
     public ResponseEntity<MenuResponseDto> createMenu(
             @PathVariable Long storeId,
@@ -35,6 +36,7 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.CREATED).body(menuResponseDto);
     }
 
+     // 메뉴 수정
     @PutMapping("/menus/{menuId}")
     public ResponseEntity<MenuResponseDto> updateMenu(
             @PathVariable Long storeId,
@@ -50,6 +52,7 @@ public class MenuController {
         return ResponseEntity.ok().body(menuResponseDto);
     }
 
+    // 메뉴 상태 변경
     @PatchMapping("/menus/{menuId}")
     public ResponseEntity<String> updateMenuState(
             @PathVariable Long storeId,
@@ -61,6 +64,6 @@ public class MenuController {
 
         String updatedState = menuService.updatedState(userId, storeId, menuId);
 
-        return ResponseEntity.ok().body("메뉴 상태가 " + updatedState + "으로 변경되었습니다.");
+        return ResponseEntity.ok().body("메뉴 상태가 " + updatedState + " 으로 변경되었습니다.");
     }
 }
