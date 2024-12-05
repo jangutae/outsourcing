@@ -20,31 +20,43 @@ public class Review extends BaseEntity {
     private Integer star;
     private String contents;
 
+    private Long userId;
+    private String storeName;
+    private String menuName;
+
 //    @ManyToOne
 //    @JoinColumn(name="user_id")
 //    private User user;
 //
-//    @ManyToOne
-//    @JoinColumn(name = "order_id")
-//    private Order order;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
-    private Long userId;
-    private Long menuId;
-    private String state;
-
-    private Long storeId;
-    private String menuName;
-//
-
-    public Review(Integer star, String contents, Long userId, Long menuId, String state, Long storeId, String menuName) {
+    public Review(Integer star, String contents, Order order){
         this.star = star;
         this.contents = contents;
-        this.userId = userId;
-        this.menuId = menuId;
-        this.state = state;
-        this.storeId = storeId;
-        this.menuName = menuName;
+        this.order = order;
+        this.userId = order.getUser().getId();
+        this.storeName = order.getStore().getStoreName();
+        this.menuName = order.getMenu().getMenuName();
     }
+
+//    private Long userId;
+//    private Long menuId;
+//    private String state;
+//
+//    private Long storeId;
+//    private String menuName;
+//
+//    public Review(Integer star, String contents, Long userId, Long menuId, String state, Long storeId, String menuName) {
+//        this.star = star;
+//        this.contents = contents;
+//        this.userId = userId;
+//        this.menuId = menuId;
+//        this.state = state;
+//        this.storeId = storeId;
+//        this.menuName = menuName;
+//    }
 
 
 }

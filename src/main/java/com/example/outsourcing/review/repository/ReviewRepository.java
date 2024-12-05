@@ -8,10 +8,12 @@ import java.util.List;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+    List<Review> findAllByOrderIdOrderByCreatedAtDesc(Long orderId);
 
-    List<Review> findAllByStoreIdOrderByCreatedAtDesc(Long id);
 
-    List<Review> findAllByStarOrderByCreatedAtDesc(Integer star);
+//    List<Review> findAllByStoreIdOrderByCreatedAtDesc(Long id);
+
+//    List<Review> findAllByStarOrderByCreatedAtDesc(Integer star);
 
 //    List<Review> findAllByStarOrderByCreatedAtDescAndByStarBetween(Integer star1, Integer star2);
 }
