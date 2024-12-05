@@ -1,6 +1,5 @@
-package com.example.outsourcing.menu.exception;
+package com.example.outsourcing.common.exception;
 
-import com.example.outsourcing.common.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

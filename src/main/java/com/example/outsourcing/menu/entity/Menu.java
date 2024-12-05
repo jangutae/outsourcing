@@ -1,5 +1,6 @@
 package com.example.outsourcing.menu.entity;
 
+import com.example.outsourcing.common.entity.BaseEntity;
 import com.example.outsourcing.menu.enums.StateType;
 import com.example.outsourcing.store.entity.Store;
 import com.example.outsourcing.user.entity.User;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class Menu {
+public class Menu extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
