@@ -2,6 +2,7 @@ package com.example.outsourcing.menu.entity;
 
 import com.example.outsourcing.common.entity.BaseEntity;
 import com.example.outsourcing.menu.enums.StateType;
+import com.example.outsourcing.order.entity.Order;
 import com.example.outsourcing.store.entity.Store;
 import com.example.outsourcing.user.entity.User;
 import jakarta.persistence.*;
@@ -22,10 +23,6 @@ public class Menu extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
 
@@ -35,13 +32,15 @@ public class Menu extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Integer price;
 
+    @OneToOne(mappedBy = "menu")
+    private Order order;
+
     @Setter
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private StateType state;
 
-    public Menu(User user, Store store, String menuName, Integer price, StateType state) {
-        this.user = user;
+    public Menu(Store store, String menuName, Integer price, StateType state) {
         this.store = store;
         this.menuName = menuName;
         this.price = price;
