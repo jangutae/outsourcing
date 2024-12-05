@@ -33,7 +33,7 @@ public class Store extends BaseEntity {
     private String closeTime;
     @Enumerated(EnumType.STRING)
     private State state;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
 
     public Store(User user, OpenedStoreRequestDto openedStoreRequestDto) {
