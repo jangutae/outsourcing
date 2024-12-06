@@ -4,7 +4,6 @@ import com.example.outsourcing.common.constants.AccountRole;
 import com.example.outsourcing.common.exception.*;
 import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.menu.repository.MenuRepository;
-import com.example.outsourcing.order.dto.OrderRequestDto;
 import com.example.outsourcing.order.dto.OrderResponseDto;
 import com.example.outsourcing.order.dto.UpdateDeliveryStateRequestDto;
 import com.example.outsourcing.order.entity.Order;
@@ -31,34 +30,28 @@ public class OrderService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public OrderResponseDto createdOrder(Long userId, Long menuId, OrderRequestDto requestDto) {
+    public OrderResponseDto createdOrder(Long userId, Long menuId)  {
         User user = userRepository.findByIdOrElseThrows(userId);
-        Store store = storeRepository.findById(requestDto.storeId()).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
-        List<Menu> allByStoreId = menuRepository.findAllByStoreId(requestDto.storeId());
 
-        Order createdOrder = new Order(user, store, menu, requestDto.orderPrice(), DeliveryState.ORDER_COMPLETE);
-
-
-        if (!allByStoreId.contains(menu)) {
-            throw new CustomException(OrderErrorCode.NOT_FOUND);
-        }
+        Order createdOrder = new Order(user, menu.getStore(), menu,  DeliveryState.ORDER_COMPLETE);
+//
         // 사용자만 음식을 주문할 수 있습니다.
-        if (!user.getRole().equals(AccountRole.USER)) {
+        if (!AccountRole.USER.equals(user.getRole())) {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_BOSS);
         }
         // 최소주문 금액을 만족해야 합니다.
-        if (requestDto.orderPrice() < store.getMinPrice()) {
+        if (menu.getPrice() < menu.getStore().getMinPrice()) {
             throw new CustomException(OrderErrorCode.MIN_PRICE_NOT_SATISFIED);
         }
 
         // 오픈 시간 아닙니다.
-        if (LocalTime.now().isBefore(createdOrder.stringToLocaltime(store.getOpenTime()))) {
+        if (LocalTime.now().isBefore(createdOrder.stringToLocaltime(menu.getStore().getOpenTime()))) {
             throw new CustomException(OrderErrorCode.OPEN_YET);
         }
 
         // 마감 시간이 지났습니다.
-        if (LocalTime.now().isAfter(createdOrder.stringToLocaltime(store.getCloseTime()))) {
+        if (LocalTime.now().isAfter(createdOrder.stringToLocaltime(menu.getStore().getCloseTime()))) {
             throw new CustomException(OrderErrorCode.ALREADY_CLOSE);
         }
 
@@ -90,18 +83,6 @@ public class OrderService {
         if (!order.getId().equals(orderId)) {
             throw new CustomException(OrderErrorCode.NOT_FOUND);
         }
-            // if 문 사용
-//        if (requestDto.state().equals(DeliveryState.ORDER_ACCEPT)) {
-//            order.setState((DeliveryState.ORDER_ACCEPT));
-//        } else if (requestDto.state().equals(DeliveryState.STILL_COOKING)) {
-//            order.setState(DeliveryState.STILL_COOKING);
-//        } else if (requestDto.state().equals(DeliveryState.COOK_DONE)) {
-//            order.setState(DeliveryState.COOK_DONE);
-//        } else if (requestDto.state().equals(DeliveryState.STILL_DELIVERING)) {
-//            order.setState(DeliveryState.STILL_DELIVERING);
-//        } else {
-//            order.setState(DeliveryState.DELIVERY_COMPLETE);
-//        }
 
         // switch  문 사용
         switch(requestDto.state())

@@ -9,7 +9,6 @@ public record OrderResponseDto(
         Long menuId,
         String storeName,
         String menuName,
-        Integer orderPrice,
         DeliveryState state) {
 
     public static OrderResponseDto toDto(Order order) {
@@ -19,7 +18,6 @@ public record OrderResponseDto(
                 order.getMenu().getId(),
                 order.getStore().getStoreName(),
                 order.getMenu().getMenuName(),
-                order.getOrderPrice(),
                 order.getState());
     }
 }

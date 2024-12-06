@@ -39,8 +39,6 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "store_id")
     Store store;
 
-    @Column(name = "order_price", nullable = false)
-    Integer orderPrice;
 
     @Column(name = "order_time")
     LocalTime orderTime = LocalTime.now();
@@ -56,11 +54,10 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     DeliveryState state;
 
-    public Order(User user, Store store, Menu menu, Integer orderPrice, DeliveryState state) {
+    public Order(User user, Store store, Menu menu,  DeliveryState state) {
         this.user = user;
         this.store = store;
         this.menu = menu;
-        this.orderPrice = orderPrice;
         this.state = state;
     }
 

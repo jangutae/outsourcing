@@ -1,7 +1,5 @@
 package com.example.outsourcing.order.controller;
 
-import com.example.outsourcing.menu.service.MenuService;
-import com.example.outsourcing.order.dto.OrderRequestDto;
 import com.example.outsourcing.order.dto.OrderResponseDto;
 import com.example.outsourcing.order.dto.UpdateDeliveryStateRequestDto;
 import com.example.outsourcing.order.service.OrderService;
@@ -23,13 +21,12 @@ public class OrderController {
     @PostMapping("/menus/{menuId}/orders")
     public ResponseEntity<OrderResponseDto> createOrder(
             @PathVariable Long menuId,
-            @RequestBody OrderRequestDto requestDto,
             HttpServletRequest httpServletRequest
     ) {
         HttpSession userSession = httpServletRequest.getSession(false);
         Long userId = (Long) userSession.getAttribute("id");
 
-        OrderResponseDto orderResponseDto = orderService.createdOrder(userId, menuId, requestDto);
+        OrderResponseDto orderResponseDto = orderService.createdOrder(userId, menuId);
 
         return ResponseEntity.ok().body(orderResponseDto);
     }

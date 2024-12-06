@@ -112,6 +112,7 @@ public class MenuService {
     메뉴 상태 관계 없이 전제 조회
     */
     public List<Menu> findAllByStoreId(Long storeId) {
+
         return menuRepository.findAllByStoreId(storeId);
     }
 }
