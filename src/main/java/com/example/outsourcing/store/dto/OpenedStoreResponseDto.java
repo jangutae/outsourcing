@@ -11,10 +11,15 @@ import java.time.LocalTime;
 public class OpenedStoreResponseDto {
 
     private Long storeId;
+
     private Long userId;
+
     private String storeName;
+
     private Integer minPrice;
+
     private LocalTime openTime;
+
     private LocalTime closeTime;
 
     public OpenedStoreResponseDto(Store store) {

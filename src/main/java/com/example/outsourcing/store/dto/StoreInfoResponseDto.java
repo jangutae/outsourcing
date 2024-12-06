@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StoreInfoResponseDto {
     private Long storeId;
+
     private String storeName;
 
     public StoreInfoResponseDto(Store store) {

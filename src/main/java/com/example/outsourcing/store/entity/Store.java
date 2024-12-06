@@ -21,19 +21,26 @@ public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
+
     @Column(nullable = false)
     private String storeName;
+
     @Column(nullable = false)
     private Integer minPrice;
+
     @Column(nullable = false)
     private LocalTime openTime;
+
     @Column(nullable = false)
     private LocalTime closeTime;
+
     @Enumerated(EnumType.STRING)
     private State state;
+
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
 
