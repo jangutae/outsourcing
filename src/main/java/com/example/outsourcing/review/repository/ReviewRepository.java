@@ -13,22 +13,27 @@ import java.util.List;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-//    List<Review> findAllByOrderIdOrderByCreatedAtDesc(Long orderId);
-
-//    List<Review> order(Order order);
 
     Review findByOrderId(Long orderId);
 
     @Query(value = "select review " +
-                "from Review review " +
-                "where review.storeId =:storeId and review.userId != :userId")
-    List<Review> findAllByOrderIdOrderByCreatedAtDesc(Long storeId, Long userId);
+            "from Review review " +
+            "where review.storeId =:storeId and review.userId != :userId " +
+            "order by review.createdAt desc")
+    List<Review> findAllByStoreIdOrderByCreatedAtDesc(
+            @Param("storeId") Long storeId,
+            @Param("userId") Long userId);
 
 
+    @Query(value = "select review " +
+            "from Review review " +
+            "where review.storeId=:storeId and review.userId !=:userId and review.star between (:star1) and (:star2) " +
+            "order by review.createdAt desc ")
+    List<Review> findAllByStoreIdAndByStarBetween(
+            @Param("storeId") Long storeId,
+            @Param("userId") Long userId,
+            @Param("star1") Integer star1,
+            @Param("star2") Integer star2);
 
-//    List<Review> findAllByStoreIdOrderByCreatedAtDesc(Long id);
 
-//    List<Review> findAllByStarOrderByCreatedAtDesc(Integer star);
-
-//    List<Review> findAllByStarOrderByCreatedAtDescAndByStarBetween(Integer star1, Integer star2);
 }

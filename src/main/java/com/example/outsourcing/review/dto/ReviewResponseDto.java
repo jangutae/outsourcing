@@ -14,9 +14,8 @@ public class ReviewResponseDto {
     private String contents;
 
     private Long userId;
-//    private String userName;
-//    private String storeName;
     private Long storeId;
+    private String storeName;
     private String menuName;
 
 

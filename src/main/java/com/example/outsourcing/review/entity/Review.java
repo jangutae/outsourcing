@@ -24,7 +24,7 @@ public class Review extends BaseEntity {
     private Long storeId;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id",unique = true)
     private Order order;
 
     public Review(Integer star, String contents, Order order){
@@ -34,23 +34,5 @@ public class Review extends BaseEntity {
         this.userId = order.getUser().getId();
         this.storeId = order.getStore().getId();
     }
-
-//    private Long userId;
-//    private Long menuId;
-//    private String state;
-//
-//    private Long storeId;
-//    private String menuName;
-//
-//    public Review(Integer star, String contents, Long userId, Long menuId, String state, Long storeId, String menuName) {
-//        this.star = star;
-//        this.contents = contents;
-//        this.userId = userId;
-//        this.menuId = menuId;
-//        this.state = state;
-//        this.storeId = storeId;
-//        this.menuName = menuName;
-//    }
-
 
 }

@@ -29,75 +29,32 @@ public class ReviewController {
             @PathVariable Long orderId,
             @RequestBody ReviewRequestDto requestDto,
             HttpServletRequest servletRequest
-    ){
+    ) {
         HttpSession session = servletRequest.getSession();
         Long userId = (Long) session.getAttribute("id");
         ReviewResponseDto responseDto = reviewService.createReview(userId, orderId, requestDto.getStar(), requestDto.getContents());
 
-        return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{storeId}")
     public ResponseEntity<List<ReviewResponseDto>> readAllReview(
             @PathVariable Long storeId,
+            @RequestParam(required = false, value = "star") List<Integer> star,
             HttpServletRequest servletRequest
-    ){
+    ) {
         HttpSession session = servletRequest.getSession();
         Long userId = (Long) session.getAttribute("id");
-        List<ReviewResponseDto> responseDtos = reviewService.readAllReview(storeId,userId);
+        List<ReviewResponseDto> responseDtos = new ArrayList<>();
 
+        if (star != null) {
+            // 파라미터 값이(별점이) 있을 경우
+            responseDtos = reviewService.readByStar(storeId, userId, star.get(0), star.get(1));
+        } else {
+            //파라미터 값이 없을 경우 (별점없이 가게로만 조회할 때)
+            responseDtos = reviewService.readAllReview(storeId, userId);
+        }
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
     }
-
-//    @PostMapping()
-//    public ResponseEntity<ReviewResponseDto> createReview(
-//            @RequestBody ReviewRequestDto requestDto,
-//            HttpServletRequest servletRequest
-//    ){
-//        HttpSession session = servletRequest.getSession();
-//        Long userId = (Long) session.getAttribute("id");
-//        ReviewResponseDto responseDto = reviewService.createReview(
-//                userId,
-//                requestDto.getStar(),
-//                requestDto.getContents(),
-//                requestDto.getUserId(),
-//                requestDto.getMenuId(),
-//                requestDto.getState(),
-//                requestDto.getStoreId(),
-//                requestDto.getMenuName()
-//        );
-//        return new ResponseEntity(responseDto, HttpStatus.CREATED);
-//    }
-
-//    @GetMapping("/{storeId}")
-//    public ResponseEntity<List<ReviewResponseDto>> reviewsByStore(
-//            @PathVariable Long storeId,
-//            @RequestParam(required = false, value="star") List<Integer> star
-//    ){
-//        List<ReviewResponseDto> responseDtos = new ArrayList<>();
-//        if(star != null){
-//            log.info("** star : {}",star);
-//            log.info("requestParam : {}", star.get(0));
-//            log.info("requestParam : {}", star.get(1));
-//
-//            responseDtos = reviewService.reviewsByStar(storeId,star);
-//
-//        } else {
-//            responseDtos = reviewService.reviewsByStore(storeId);
-//        }
-//
-//        return new ResponseEntity(responseDtos,HttpStatus.OK);
-//    }
-
-//    @GetMapping("/{storeId}")
-//    public ResponseEntity<List<ReviewResponseDto>> reviewsByStar(@PathVariable Long storeId,@RequestParam List<Integer>starValue){
-//
-//        log.info("starValue[0] : {}  ", starValue.get(0));
-//
-////        List<ReviewResponseDto> responseDtos = reviewService.reviewsByStar(storeId,);
-//
-//        return new ResponseEntity<>( HttpStatus.OK);
-//    }
-
 
 }

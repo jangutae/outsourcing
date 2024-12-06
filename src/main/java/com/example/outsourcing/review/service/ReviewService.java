@@ -25,7 +25,6 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
 
@@ -34,6 +33,7 @@ public class ReviewService {
 
         Order orderById = orderRepository.findOrderByIdOrElseThrow(orderId);
         User userById = userRepository.findByIdOrElseThrows(userId);
+        Review byOrderId = reviewRepository.findByOrderId(orderId);
 
         if (userById.getId() == orderById.getUser().getId()
                 && orderById.getState() == DeliveryState.ORDER_COMPLETE
@@ -41,136 +41,56 @@ public class ReviewService {
             if (userById.getRole() == AccountRole.USER) {
                 Review review = new Review(star, contents, orderById);
                 Review savedReview = reviewRepository.save(review);
-
                 return new ReviewResponseDto(
                         savedReview.getId(),
                         savedReview.getStar(),
                         savedReview.getContents(),
                         savedReview.getOrder().getUser().getId(),
                         savedReview.getOrder().getId(),
+                        savedReview.getOrder().getStore().getStoreName(),
                         savedReview.getOrder().getMenu().getMenuName(),
-                        savedReview.getCreatedAt()
-                );
+                        savedReview.getCreatedAt());
             } else {
                 throw new CustomException(ReviewErrorCode.INVALID_OWNER);
             }
         } else {
             throw new CustomException(ReviewErrorCode.INVALID_NOT_ME);
         }
-
     }
 
     // 리뷰 조회 - 본인 작성한 리뷰는 제외
-    public List<ReviewResponseDto> readAllReview(Long storeId,Long userId) {
-//        Order orderByIdOrElseThrow = orderRepository.findOrderByIdOrElseThrow(orderId);
+    public List<ReviewResponseDto> readAllReview(Long storeId, Long userId) {
+        List<Review> allByOrderId = reviewRepository.findAllByStoreIdOrderByCreatedAtDesc(storeId, userId);
+        return makeResponseDtos(allByOrderId);
+    }
 
-        log.info("!!! userId : {}", userId);
-        log.info("!!! storeId : {}", storeId);
+    //리뷰 조회 - 별점으로 조회 (본인 작성한 리뷰 제외하지 않음)
+    public List<ReviewResponseDto> readByStar(Long storeId, Long userId, Integer star1, Integer star2) {
+        List<Review> allByStar = reviewRepository.findAllByStoreIdAndByStarBetween(storeId, userId, star1, star2);
+        return makeResponseDtos(allByStar);
+    }
 
-        List<Review> allByOrderId = reviewRepository.findAllByOrderIdOrderByCreatedAtDesc(storeId,userId);
+    // 리스트 만드는 공통부분 메소드
+    public List<ReviewResponseDto> makeResponseDtos(List<Review> reviews) {
         List<ReviewResponseDto> responseDtos = new ArrayList<>();
-        for (Review item : allByOrderId) {
-            ReviewResponseDto reviewResponseDto = new ReviewResponseDto(
-                    item.getId(),
-                    item.getStar(),
-                    item.getContents(),
-                    item.getOrder().getUser().getId(),
-                    item.getOrder().getId(),
-                    item.getOrder().getMenu().getMenuName(),
-                    item.getCreatedAt()
-            );
-            responseDtos.add(reviewResponseDto);
+        if (!reviews.isEmpty()) {
+            for (Review item : reviews) {
+                ReviewResponseDto reviewResponseDto = new ReviewResponseDto(
+                        item.getId(),
+                        item.getStar(),
+                        item.getContents(),
+                        item.getOrder().getUser().getId(),
+                        item.getOrder().getId(),
+                        item.getOrder().getMenu().getMenuName(),
+                        item.getOrder().getStore().getStoreName(),
+                        item.getCreatedAt()
+                );
+                responseDtos.add(reviewResponseDto);
+            }
+        } else {
+            throw new CustomException(ReviewErrorCode.NOT_FOUND);
         }
-
         return responseDtos;
     }
 
-
-//    public ReviewResponseDto createReview(Long id, Integer star, String contents, Long userId, Long menuId, String state, Long storeId, String menuName) {
-//
-//        User userById = userRepository.findByIdOrElseThrows(id);
-//        if (userById.getRole() == AccountRole.USER) {
-//            Review review = new Review(star, contents, userId, menuId, state, storeId, menuName);
-//            Review savedReview = reviewRepository.save(review);
-//
-//            return new ReviewResponseDto(
-//                    savedReview.getId(),
-//                    savedReview.getStar(),
-//                    savedReview.getContents(),
-//                    savedReview.getUserId(),
-//                    savedReview.getStoreId(),
-//                    savedReview.getMenuName(),
-//                    savedReview.getCreatedAt()
-//            );
-//
-//        } else {
-//            throw new CustomException(ReviewErrorCode.INVALID_OWNER);
-////            return new ReviewResponseDto(100L,100,"없다",id, 100L,"메뉴없다");
-//        }
-//
-//    }
-
-//    public List<ReviewResponseDto> reviewsByStore(Long id) {
-//        List<Review> allByStoreId = reviewRepository.findAllByStoreIdOrderByCreatedAtDesc(id);
-//        List<ReviewResponseDto> responseDtos = new ArrayList<>();
-//        if (!allByStoreId.isEmpty()) {
-//            for (Review item : allByStoreId) {
-//                ReviewResponseDto reviewResponse = new ReviewResponseDto(
-//                        item.getId(),
-//                        item.getStar(),
-//                        item.getContents(),
-//                        item.getUserId(),
-//                        item.getStoreId(),
-//                        item.getMenuName(),
-//                        item.getCreatedAt()
-//                );
-//                responseDtos.add(reviewResponse);
-//            }
-//            return responseDtos;
-//        } else {
-//            throw new CustomException(ReviewErrorCode.NOT_FOUND);
-//        }
-//
-//    }
-
-//    public List<ReviewResponseDto> reviewsByStar(Long storeId, List<Integer> star) {
-//
-//        log.info("star.get(0) : {}",star.get(0));
-//        log.info("star.get(0) : {}",star.get(1));
-//        List<Review> allByStar = reviewRepository.findAllByStarOrderByCreatedAtDescAndByStarBetween(star.get(0), star.get(1));
-//        List<ReviewResponseDto> responseDtos = new ArrayList<>();
-//        for (Review item : allByStar) {
-//            ReviewResponseDto reviewResponseDto = new ReviewResponseDto(
-//                    item.getId(),
-//                    item.getStar(),
-//                    item.getContents(),
-//                    item.getUserId(),
-//                    item.getStoreId(),
-//                    item.getMenuName(),
-//                    item.getCreatedAt()
-//            );
-//            responseDtos.add(reviewResponseDto);
-//        }
-//        return responseDtos;
-//
-//        return null;
-//    }
-
-//    public List<ReviewResponseDto> reviewsByStar(Long storeId, List<Integer> starValue) {
-//        List<Review> allByStar = reviewRepository.findAllByStarOrderByCreatedAtDesc(starValue);
-//        List<ReviewResponseDto> responseDtos = new ArrayList<>();
-//        for(Review item : allByStar){
-//            ReviewResponseDto reviewResponseDto = new ReviewResponseDto(
-//                    item.getId(),
-//                    item.getStar(),
-//                    item.getContents(),
-//                    item.getUserId(),
-//                    item.getStoreId(),
-//                    item.getMenuName(),
-//                    item.getCreatedAt()
-//            );
-//            responseDtos.add(reviewResponseDto);
-//        }
-//        return responseDtos;
-//    }
 }
