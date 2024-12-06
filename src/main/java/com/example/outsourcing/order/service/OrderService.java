@@ -38,9 +38,10 @@ public class OrderService {
         User user = userRepository.findByIdOrElseThrows(userId);
         Store store = storeRepository.findById(requestDto.storeId()).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
+        List<Menu> allByStoreId = menuRepository.findAllByStoreId(requestDto.storeId());
+
         Order createdOrder = new Order(user, store, menu, requestDto.orderPrice(), DeliveryState.ORDER_COMPLETE);
 
-        List<Menu> allByStoreId = menuRepository.findAllByStoreId(requestDto.storeId());
 
         if (!allByStoreId.contains(menu)) {
             throw new CustomException(OrderErrorCode.NOT_FOUND);
@@ -72,7 +73,6 @@ public class OrderService {
     @Transactional
     public String updatedDeliveryState(Long userId, Long menuId, Long orderId, UpdateDeliveryStateRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
-        // 변경 필요 에러 코드
         Store store = storeRepository.findById(requestDto.storeId()).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
         Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
@@ -93,18 +93,35 @@ public class OrderService {
         if (!order.getId().equals(orderId)) {
             throw new CustomException(OrderErrorCode.NOT_FOUND);
         }
+            // if 문 사용
+//        if (requestDto.state().equals(DeliveryState.ORDER_ACCEPT)) {
+//            order.setState((DeliveryState.ORDER_ACCEPT));
+//        } else if (requestDto.state().equals(DeliveryState.STILL_COOKING)) {
+//            order.setState(DeliveryState.STILL_COOKING);
+//        } else if (requestDto.state().equals(DeliveryState.COOK_DONE)) {
+//            order.setState(DeliveryState.COOK_DONE);
+//        } else if (requestDto.state().equals(DeliveryState.STILL_DELIVERING)) {
+//            order.setState(DeliveryState.STILL_DELIVERING);
+//        } else {
+//            order.setState(DeliveryState.DELIVERY_COMPLETE);
+//        }
 
-        if (requestDto.state().equals(DeliveryState.ORDER_ACCEPT)) {
-            order.setState((DeliveryState.ORDER_ACCEPT));
-        } else if (requestDto.state().equals(DeliveryState.STILL_COOKING)) {
-            order.setState(DeliveryState.STILL_COOKING);
-        } else if (requestDto.state().equals(DeliveryState.COOK_DONE)) {
-            order.setState(DeliveryState.COOK_DONE);
-        } else if (requestDto.state().equals(DeliveryState.STILL_DELIVERING)) {
-            order.setState(DeliveryState.STILL_DELIVERING);
-        } else {
-            order.setState(DeliveryState.DELIVERY_COMPLETE);
+        // switch  문 사용
+        switch(requestDto.state())
+        {
+            case ORDER_ACCEPT :
+                order.setState(DeliveryState.ORDER_ACCEPT);
+            case STILL_COOKING :
+                order.setState(DeliveryState.STILL_COOKING);
+            case COOK_DONE :
+                order.setState(DeliveryState.COOK_DONE);
+            case STILL_DELIVERING :
+                order.setState(DeliveryState.STILL_DELIVERING);
+            case DELIVERY_COMPLETE :
+                order.setState(DeliveryState.DELIVERY_COMPLETE);
         }
+
+
         orderRepository.save(order);
 
         return order.getState().toString();

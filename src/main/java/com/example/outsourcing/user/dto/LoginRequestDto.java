@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 로그인 요청 정보를 담고 있는 DTO 클래스.
+ */
 @Getter
 @AllArgsConstructor
 public class LoginRequestDto {
