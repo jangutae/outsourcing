@@ -1,9 +1,8 @@
 package com.example.outsourcing.order.controller;
 
-import com.example.outsourcing.menu.service.MenuService;
-import com.example.outsourcing.order.dto.OrderRequestDto;
 import com.example.outsourcing.order.dto.OrderResponseDto;
 import com.example.outsourcing.order.dto.UpdateDeliveryStateRequestDto;
+import com.example.outsourcing.order.enums.DeliveryState;
 import com.example.outsourcing.order.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -23,13 +22,12 @@ public class OrderController {
     @PostMapping("/menus/{menuId}/orders")
     public ResponseEntity<OrderResponseDto> createOrder(
             @PathVariable Long menuId,
-            @RequestBody OrderRequestDto requestDto,
             HttpServletRequest httpServletRequest
     ) {
         HttpSession userSession = httpServletRequest.getSession(false);
         Long userId = (Long) userSession.getAttribute("id");
 
-        OrderResponseDto orderResponseDto = orderService.createdOrder(userId, menuId, requestDto);
+        OrderResponseDto orderResponseDto = orderService.createdOrder(userId, menuId);
 
         return ResponseEntity.ok().body(orderResponseDto);
     }
@@ -45,7 +43,7 @@ public class OrderController {
         HttpSession userSession = httpServletRequest.getSession(false);
         Long userId = (Long) userSession.getAttribute("id");
 
-        String deliveryState = orderService.updatedDeliveryState(userId, menuId, orderId, requestDto);
+        String deliveryState = orderService.updatedDeliveryState(userId, menuId, orderId, requestDto.state());
 
         return ResponseEntity.ok().body("주문 상태가 " + deliveryState + " 로 변경되었습니다.");
     }
@@ -56,6 +54,18 @@ public class OrderController {
         Long userId = (Long) userSession.getAttribute("id");
 
         List<OrderResponseDto> orderResponseDto = orderService.findAllOrderByUserId(userId);
+
+        return ResponseEntity.ok().body(orderResponseDto);
+    }
+
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<OrderResponseDto> checkDeliveryState(
+            @PathVariable Long orderId,
+            HttpServletRequest httpServletRequest) {
+        HttpSession userSession = httpServletRequest.getSession(false);
+        Long userId = (Long) userSession.getAttribute("id");
+
+        OrderResponseDto orderResponseDto = orderService.checkedDeliveryState(orderId, userId);
 
         return ResponseEntity.ok().body(orderResponseDto);
     }
