@@ -4,16 +4,22 @@ import com.example.outsourcing.menu.dto.MenuResponseDto;
 import com.example.outsourcing.store.entity.Store;
 import lombok.Getter;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
 public class StoreDetailInfoResponseDto {
     private Long id;
+
     private String storeName;
+
     private List<MenuResponseDto> menuList;
+
     private Integer minPrice;
-    private String openTime;
-    private String closeTime;
+
+    private LocalTime openTime;
+
+    private LocalTime closeTime;
 
     public StoreDetailInfoResponseDto(Store store, List<MenuResponseDto> list) {
 

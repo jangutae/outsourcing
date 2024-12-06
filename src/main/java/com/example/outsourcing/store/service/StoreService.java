@@ -27,7 +27,9 @@ import java.util.List;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+
     private final UserService userService;
+
     private final MenuService menuService;
 
     public OpenedStoreResponseDto open(Long userId, OpenedStoreRequestDto openedStoreRequestDto) {

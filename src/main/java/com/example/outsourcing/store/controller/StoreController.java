@@ -5,8 +5,6 @@ import com.example.outsourcing.store.dto.OpenedStoreResponseDto;
 import com.example.outsourcing.store.dto.StoreDetailInfoResponseDto;
 import com.example.outsourcing.store.dto.StoreInfoResponseDto;
 import com.example.outsourcing.store.service.StoreService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +22,9 @@ public class StoreController {
 
     // 가게 창업
     @PostMapping
-    public ResponseEntity<OpenedStoreResponseDto> openStore(@Validated @RequestBody OpenedStoreRequestDto openedStoreRequestDto, HttpServletRequest request) {
+    public ResponseEntity<OpenedStoreResponseDto> openStore(@Validated @RequestBody OpenedStoreRequestDto openedStoreRequestDto, @SessionAttribute("id") Long id) {
 
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("id");
-        OpenedStoreResponseDto openedStoreResponseDto = storeService.open(userId, openedStoreRequestDto);
+        OpenedStoreResponseDto openedStoreResponseDto = storeService.open(id, openedStoreRequestDto);
         return new ResponseEntity<>(openedStoreResponseDto, HttpStatus.CREATED);
 
     }
@@ -57,18 +53,16 @@ public class StoreController {
 
     // 가게 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateStoreInfo(@PathVariable Long id, @RequestBody OpenedStoreResponseDto openedStoreResponseDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("id");
+    public ResponseEntity<Void> updateStoreInfo(@PathVariable Long id, @RequestBody OpenedStoreResponseDto openedStoreResponseDto, @SessionAttribute("id") Long userId) {
+
         storeService.updateStoreInfo(userId, id, openedStoreResponseDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 가게 폐업
     @DeleteMapping("/{id}")
-    public void closeStore(@PathVariable Long id, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("id");
+    public void closeStore(@PathVariable Long id, @SessionAttribute("id") Long userId) {
+
         storeService.close(id, userId);
     }
 }
