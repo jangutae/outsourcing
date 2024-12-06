@@ -29,6 +29,7 @@ public class MenuService {
     private final UserRepository userRepository;
 
     // 메뉴 생성
+    @Transactional
     public MenuResponseDto createdMenu(Long userId, Long storeId, CreateMenuRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
 
@@ -93,7 +94,7 @@ public class MenuService {
         return menu.getState().toString();
     }
 
-    /* 가게 조회 시 전체 메뉴 조회 (가게 메뉴 조회시)
+    /* 가게 조회 시 전체 메뉴 조회 (가게 상세 조회 시 메뉴 전체 조회)
     메뉴 상태가 DELETE 인 경우는 제외
      */
     public List<Menu> findAllWithoutDeleteByStoreId(Long storeId) {
@@ -106,13 +107,5 @@ public class MenuService {
             }
         }
         return withoutDelete;
-    }
-
-    /* 가게 조회 시 전체 메뉴 조회 (주문 메뉴 조회시)
-    메뉴 상태 관계 없이 전제 조회
-    */
-    public List<Menu> findAllByStoreId(Long storeId) {
-
-        return menuRepository.findAllByStoreId(storeId);
     }
 }
