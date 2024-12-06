@@ -6,7 +6,6 @@ import com.example.outsourcing.order.enums.DeliveryState;
 public record OrderResponseDto(
         Long id,
         Long userId,
-        Long storeId,
         Long menuId,
         Integer orderPrice,
         DeliveryState state) {
@@ -15,7 +14,6 @@ public record OrderResponseDto(
         return new OrderResponseDto(
                 order.getId(),
                 order.getUser().getId(),
-                order.getStore().getId(),
                 order.getMenu().getId(),
                 order.getOrderPrice(),
                 order.getState());

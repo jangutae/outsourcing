@@ -20,9 +20,8 @@ public class OrderController {
     private final OrderService orderService;
 
     // 주문 생성
-    @PostMapping("/stores/{storeId}/menus/{menuId}/orders")
+    @PostMapping("/menus/{menuId}/orders")
     public ResponseEntity<OrderResponseDto> createOrder(
-            @PathVariable Long storeId,
             @PathVariable Long menuId,
             @RequestBody OrderRequestDto requestDto,
             HttpServletRequest httpServletRequest
@@ -30,15 +29,14 @@ public class OrderController {
         HttpSession userSession = httpServletRequest.getSession(false);
         Long userId = (Long) userSession.getAttribute("id");
 
-        OrderResponseDto orderResponseDto = orderService.createdOrder(userId, menuId, storeId ,requestDto);
+        OrderResponseDto orderResponseDto = orderService.createdOrder(userId, menuId, requestDto);
 
         return ResponseEntity.ok().body(orderResponseDto);
     }
 
     // 주문 상태 변경
-    @PatchMapping("/stores/{storeId}/menus/{menuId}/orders/{orderId}")
+    @PatchMapping("/menus/{menuId}/orders/{orderId}")
     public ResponseEntity<String> updateDeliveryState(
-            @PathVariable Long storeId,
             @PathVariable Long menuId,
             @PathVariable Long orderId,
             @RequestBody UpdateDeliveryStateRequestDto requestDto,
@@ -47,7 +45,7 @@ public class OrderController {
         HttpSession userSession = httpServletRequest.getSession(false);
         Long userId = (Long) userSession.getAttribute("id");
 
-        String deliveryState = orderService.updatedDeliveryState(userId, storeId, menuId, orderId, requestDto);
+        String deliveryState = orderService.updatedDeliveryState(userId, menuId, orderId, requestDto);
 
         return ResponseEntity.ok().body("주문 상태가 " + deliveryState + " 로 변경되었습니다.");
     }

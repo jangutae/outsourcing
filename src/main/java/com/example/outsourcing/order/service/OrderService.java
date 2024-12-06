@@ -1,10 +1,7 @@
 package com.example.outsourcing.order.service;
 
 import com.example.outsourcing.common.constants.AccountRole;
-import com.example.outsourcing.common.exception.CustomException;
-import com.example.outsourcing.common.exception.ErrorCode;
-import com.example.outsourcing.common.exception.OrderErrorCode;
-import com.example.outsourcing.common.exception.UserErrorCode;
+import com.example.outsourcing.common.exception.*;
 import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.menu.repository.MenuRepository;
 import com.example.outsourcing.order.dto.OrderRequestDto;
@@ -23,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -35,13 +33,18 @@ public class OrderService {
     private final StoreRepository storeRepository;
 
     // 예외 처리 아직 만들어야 합니다.  주문 생성
-    public OrderResponseDto createdOrder(Long userId, Long storeId, Long menuId, OrderRequestDto requestDto) {
+    @Transactional
+    public OrderResponseDto createdOrder(Long userId, Long menuId, OrderRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
-        // 변경 필요 에러 코드
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
+        Store store = storeRepository.findById(requestDto.storeId()).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
-
         Order createdOrder = new Order(user, store, menu, requestDto.orderPrice(), DeliveryState.ORDER_COMPLETE);
+
+        List<Menu> allByStoreId = menuRepository.findAllByStoreId(requestDto.storeId());
+
+        if (!allByStoreId.contains(menu)) {
+            throw new CustomException(OrderErrorCode.NOT_FOUND);
+        }
         // 사용자만 음식을 주문할 수 있습니다.
         if (!user.getRole().equals(AccountRole.USER)) {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_BOSS);
@@ -52,25 +55,25 @@ public class OrderService {
         }
 
         // 오픈 시간 아닙니다.
-        if (createdOrder.getOrderTime().isBefore(createdOrder.stringToLocaltime(store.getOpenTime()))) {
+        if (LocalTime.now().isBefore(createdOrder.stringToLocaltime(store.getOpenTime()))) {
             throw new CustomException(OrderErrorCode.OPEN_YET);
         }
 
         // 마감 시간이 지났습니다.
-        if (createdOrder.getOrderTime().isAfter(createdOrder.stringToLocaltime(store.getCloseTime()))) {
+        if (LocalTime.now().isAfter(createdOrder.stringToLocaltime(store.getCloseTime()))) {
             throw new CustomException(OrderErrorCode.ALREADY_CLOSE);
-
         }
 
         orderRepository.save(createdOrder);
 
         return OrderResponseDto.toDto(createdOrder);
     }
+
     @Transactional
-    public String updatedDeliveryState(Long userId, Long storeId, Long menuId, Long orderId, UpdateDeliveryStateRequestDto requestDto) {
+    public String updatedDeliveryState(Long userId, Long menuId, Long orderId, UpdateDeliveryStateRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
         // 변경 필요 에러 코드
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(UserErrorCode.NOT_FOUND));
+        Store store = storeRepository.findById(requestDto.storeId()).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
         Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
 
@@ -79,7 +82,7 @@ public class OrderService {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_USER);
         }
 
-        if (!store.getId().equals(storeId)) {
+        if (!store.getId().equals(requestDto.storeId())) {
             throw new CustomException(OrderErrorCode.NOT_FOUND);
         }
 
