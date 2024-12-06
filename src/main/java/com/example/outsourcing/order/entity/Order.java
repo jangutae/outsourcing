@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.mapping.ToOne;
 
 import java.time.LocalTime;
 
@@ -44,9 +43,9 @@ public class Order extends BaseEntity {
     LocalTime orderTime = LocalTime.now();
 
 
-//    @OneToOne
-//    @JoinColumn(name = "review_id")
-//    Review review;
+    @OneToOne
+    @JoinColumn(name = "review_id")
+    Review review;
 
 
     @Setter

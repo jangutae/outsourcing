@@ -2,6 +2,7 @@ package com.example.outsourcing.order.controller;
 
 import com.example.outsourcing.order.dto.OrderResponseDto;
 import com.example.outsourcing.order.dto.UpdateDeliveryStateRequestDto;
+import com.example.outsourcing.order.enums.DeliveryState;
 import com.example.outsourcing.order.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -42,7 +43,7 @@ public class OrderController {
         HttpSession userSession = httpServletRequest.getSession(false);
         Long userId = (Long) userSession.getAttribute("id");
 
-        String deliveryState = orderService.updatedDeliveryState(userId, menuId, orderId, requestDto);
+        String deliveryState = orderService.updatedDeliveryState(userId, menuId, orderId, requestDto.state());
 
         return ResponseEntity.ok().body("주문 상태가 " + deliveryState + " 로 변경되었습니다.");
     }

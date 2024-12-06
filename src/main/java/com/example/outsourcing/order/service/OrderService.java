@@ -61,19 +61,14 @@ public class OrderService {
     }
 
     @Transactional
-    public String updatedDeliveryState(Long userId, Long menuId, Long orderId, UpdateDeliveryStateRequestDto requestDto) {
+    public String updatedDeliveryState(Long userId, Long menuId, Long orderId, DeliveryState state) {
         User user = userRepository.findByIdOrElseThrows(userId);
-        Store store = storeRepository.findById(requestDto.storeId()).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
         Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
 
 
         if (!user.getRole().equals(AccountRole.BOSS)) {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_USER);
-        }
-
-        if (!store.getId().equals(requestDto.storeId())) {
-            throw new CustomException(OrderErrorCode.NOT_FOUND);
         }
 
         if (!menu.getId().equals(menuId)) {
@@ -85,7 +80,7 @@ public class OrderService {
         }
 
         // switch  문 사용
-        switch(requestDto.state())
+        switch(state)
         {
             case ORDER_ACCEPT :
                 order.setState(DeliveryState.ORDER_ACCEPT);
