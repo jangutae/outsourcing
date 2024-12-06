@@ -46,12 +46,12 @@ public class OrderService {
         }
 
         // 오픈 시간 아닙니다.
-        if (LocalTime.now().isBefore(createdOrder.stringToLocaltime(menu.getStore().getOpenTime()))) {
+        if (LocalTime.now().isBefore(menu.getStore().getOpenTime())) {
             throw new CustomException(OrderErrorCode.OPEN_YET);
         }
 
         // 마감 시간이 지났습니다.
-        if (LocalTime.now().isAfter(createdOrder.stringToLocaltime(menu.getStore().getCloseTime()))) {
+        if (LocalTime.now().isAfter(menu.getStore().getCloseTime())) {
             throw new CustomException(OrderErrorCode.ALREADY_CLOSE);
         }
 
@@ -64,7 +64,7 @@ public class OrderService {
     public String updatedDeliveryState(Long userId, Long menuId, Long orderId, DeliveryState state) {
         User user = userRepository.findByIdOrElseThrows(userId);
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
-        Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
+        Order order = orderRepository.findOrderByIdAndState(orderId, state);
 
 
         if (!user.getRole().equals(AccountRole.BOSS)) {
@@ -80,7 +80,7 @@ public class OrderService {
         }
 
         // switch  문 사용
-        switch(state)
+        switch(order.getState())
         {
             case ORDER_ACCEPT :
                 order.setState(DeliveryState.ORDER_ACCEPT);
@@ -117,13 +117,8 @@ public class OrderService {
         return allOrders.stream().map(OrderResponseDto::toDto).toList();
     }
 
-    public OrderResponseDto checkedDeliveryState(Long orderId, Long userId) {
-        User user = userRepository.findByIdOrElseThrows(userId);
+    public OrderResponseDto checkedDeliveryState(Long orderId) {
         Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
-
-        if (!user.getId().equals(userId))    {
-            throw new CustomException(OrderErrorCode.NOT_FOUND);
-        }
 
         return OrderResponseDto.toDto(order);
     }
