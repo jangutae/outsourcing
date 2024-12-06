@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Table(name = "menus")
 @Entity
 @NoArgsConstructor
@@ -32,8 +34,8 @@ public class Menu extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @OneToOne(mappedBy = "menu")
-    private Order order;
+    @OneToMany(mappedBy = "menu")
+    private List<Order> order;
 
     @Setter
     @Column(name = "state", nullable = false)
