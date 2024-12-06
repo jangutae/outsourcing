@@ -1,24 +1,29 @@
 package com.example.outsourcing.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@RestControllerAdvice
+import java.util.stream.Collectors;
+
+@ControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
+
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<Object> handleCustomException(CustomException e) {
-        log.info("errorHandler start");
+        log.info("handleCustomException start");
         ErrorCode errorCode = e.getErrorCode();
-        return handleExceptionInternal(errorCode,errorCode.getMessage());
+        return handleExceptionInternal(errorCode, errorCode.getMessage());
     }
+
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
-
         return ResponseEntity.status(ex.getStatusCode())
                 .body(ex.getReason());
     }
@@ -30,19 +35,36 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(errorCode, errorCode.getMessage());
     }
 
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(errorCode));
-    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> fieldError.getDefaultMessage())
+                .collect(Collectors.joining(", "));
 
 
-    private ErrorResponse makeErrorResponse(ErrorCode errorCode) {
-        return ErrorResponse.builder()
-                .code(errorCode.name())
-                .message(errorCode.getMessage())
+        String errorCode = getErrorCodeForFieldError(ex.getBindingResult().getFieldErrors().get(0));
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(errorCode)
+                .message(message)
                 .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    private String getErrorCodeForFieldError(FieldError fieldError) {
+
+        if ("name".equals(fieldError.getField())) {
+            return UserErrorCode.INVALID_PARAMETER.name();
+        }
+
+        if ("email".equals(fieldError.getField())) {
+            return UserErrorCode.INVALID_EMAIL.name();
+        }
+
+        return UserErrorCode.INVALID_PARAMETER.name();
+    }
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {
         return ResponseEntity.status(errorCode.getHttpStatus())
