@@ -61,14 +61,13 @@ public class ReviewService {
     }
 
     // 리뷰 조회 - 본인 작성한 리뷰는 제외
-    public List<ReviewResponseDto> readAllReview(Long userId, Long orderId) {
+    public List<ReviewResponseDto> readAllReview(Long storeId,Long userId) {
 //        Order orderByIdOrElseThrow = orderRepository.findOrderByIdOrElseThrow(orderId);
 
+        log.info("!!! userId : {}", userId);
+        log.info("!!! storeId : {}", storeId);
 
-        Long orderUser = reviewRepository.findByOrderId(orderId).getUserId();
-
-
-        List<Review> allByOrderId = reviewRepository.findAllByOrderIdOrderByCreatedAtDesc(orderId);
+        List<Review> allByOrderId = reviewRepository.findAllByOrderIdOrderByCreatedAtDesc(storeId,userId);
         List<ReviewResponseDto> responseDtos = new ArrayList<>();
         for (Review item : allByOrderId) {
             ReviewResponseDto reviewResponseDto = new ReviewResponseDto(

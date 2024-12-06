@@ -21,8 +21,7 @@ public class Review extends BaseEntity {
     private String contents;
 
     private Long userId;
-    private String storeName;
-    private String menuName;
+    private Long storeId;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
@@ -33,8 +32,7 @@ public class Review extends BaseEntity {
         this.contents = contents;
         this.order = order;
         this.userId = order.getUser().getId();
-        this.storeName = order.getStore().getStoreName();
-        this.menuName = order.getMenu().getMenuName();
+        this.storeId = order.getStore().getId();
     }
 
 //    private Long userId;

@@ -37,14 +37,14 @@ public class ReviewController {
         return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
     }
 
-    @GetMapping("/{orderId}")
+    @GetMapping("/{storeId}")
     public ResponseEntity<List<ReviewResponseDto>> readAllReview(
-            @PathVariable Long orderId,
+            @PathVariable Long storeId,
             HttpServletRequest servletRequest
     ){
         HttpSession session = servletRequest.getSession();
         Long userId = (Long) session.getAttribute("id");
-        List<ReviewResponseDto> responseDtos = reviewService.readAllReview(userId, orderId);
+        List<ReviewResponseDto> responseDtos = reviewService.readAllReview(storeId,userId);
 
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
     }
