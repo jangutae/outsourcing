@@ -1,11 +1,10 @@
 package com.example.outsourcing.order.controller;
 
 import com.example.outsourcing.order.dto.OrderResponseDto;
-import com.example.outsourcing.order.dto.UpdateDeliveryStateRequestDto;
-import com.example.outsourcing.order.enums.DeliveryState;
+import com.example.outsourcing.order.entity.Order;
 import com.example.outsourcing.order.service.OrderService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import com.example.outsourcing.user.entity.User;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +21,9 @@ public class OrderController {
     @PostMapping("/menus/{menuId}/orders")
     public ResponseEntity<OrderResponseDto> createOrder(
             @PathVariable Long menuId,
-            HttpServletRequest httpServletRequest
+            @SessionAttribute(value = "id") User user
     ) {
-        HttpSession userSession = httpServletRequest.getSession(false);
-        Long userId = (Long) userSession.getAttribute("id");
-
-        OrderResponseDto orderResponseDto = orderService.createdOrder(userId, menuId);
+        OrderResponseDto orderResponseDto = orderService.createdOrder(user.getId(), menuId);
 
         return ResponseEntity.ok().body(orderResponseDto);
     }
@@ -37,30 +33,23 @@ public class OrderController {
     public ResponseEntity<String> updateDeliveryState(
             @PathVariable Long menuId,
             @PathVariable Long orderId,
-            @RequestBody UpdateDeliveryStateRequestDto requestDto,
-            HttpServletRequest httpServletRequest
+            @RequestBody @NotNull(message = "주문상태값은 필수값 입니다.") Order.DeliveryState state,
+            @SessionAttribute(value = "id") User user
     ) {
-        HttpSession userSession = httpServletRequest.getSession(false);
-        Long userId = (Long) userSession.getAttribute("id");
-
-        String deliveryState = orderService.updatedDeliveryState(userId, menuId, orderId, requestDto.state());
+        String deliveryState = orderService.updatedDeliveryState(user.getId(), menuId, orderId, state);
 
         return ResponseEntity.ok().body("주문 상태가 " + deliveryState + " 로 변경되었습니다.");
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<List<OrderResponseDto>> findAllOrderByUserId(HttpServletRequest httpServletRequest) {
-        HttpSession userSession = httpServletRequest.getSession(false);
-        Long userId = (Long) userSession.getAttribute("id");
-
-        List<OrderResponseDto> orderResponseDto = orderService.findAllOrderByUserId(userId);
+    public ResponseEntity<List<OrderResponseDto>> findAllOrderByUserId(@SessionAttribute(value = "id") User user) {
+        List<OrderResponseDto> orderResponseDto = orderService.findAllOrderByUserId(user.getId());
 
         return ResponseEntity.ok().body(orderResponseDto);
     }
 
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<OrderResponseDto> checkDeliveryState(@PathVariable Long orderId) {
-
         OrderResponseDto orderResponseDto = orderService.checkedDeliveryState(orderId);
 
         return ResponseEntity.ok().body(orderResponseDto);

@@ -4,14 +4,15 @@ package com.example.outsourcing.menu.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.awt.*;
 
 public record UpdateMenuRequestDto(
+
         @NotNull(message = "메뉴 이름은 필수값 입니다.")
         @Size(min = 1 , max = 20, message = "메뉴명은 1 ~ 20 자리여야 합니다.")
         String menuName,
 
-        @NotNull(message = "변경할 가격명은 입력해 주세요.")
+        @NotNull(message = "변경할 가격의 메뉴는 필수값 입니다.")
+        @Size(min = 1, max = 30000)
         Integer price
 ) {
 

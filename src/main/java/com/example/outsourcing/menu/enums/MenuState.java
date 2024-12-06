@@ -1,5 +1,5 @@
 package com.example.outsourcing.menu.enums;
 
-public enum StateType {
+public enum MenuState {
     ORDER_POSSIBLE, DELETED,
 }
