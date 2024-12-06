@@ -15,10 +15,8 @@ import com.example.outsourcing.store.repository.StoreRepository;
 import com.example.outsourcing.user.entity.User;
 import com.example.outsourcing.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -32,7 +30,6 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
 
-    // 예외 처리 아직 만들어야 합니다.  주문 생성
     @Transactional
     public OrderResponseDto createdOrder(Long userId, Long menuId, OrderRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
@@ -111,14 +108,19 @@ public class OrderService {
         {
             case ORDER_ACCEPT :
                 order.setState(DeliveryState.ORDER_ACCEPT);
+                    break;
             case STILL_COOKING :
                 order.setState(DeliveryState.STILL_COOKING);
+                    break;
             case COOK_DONE :
                 order.setState(DeliveryState.COOK_DONE);
+                    break;
             case STILL_DELIVERING :
                 order.setState(DeliveryState.STILL_DELIVERING);
+                    break;
             case DELIVERY_COMPLETE :
                 order.setState(DeliveryState.DELIVERY_COMPLETE);
+                    break;
         }
 
 
@@ -131,11 +133,22 @@ public class OrderService {
         User user = userRepository.findByIdOrElseThrows(userId);
 
         if (!user.getRole().equals(AccountRole.USER)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new CustomException(OrderErrorCode.NOT_ACCESS_USER);
         }
 
         List<Order> allOrders = orderRepository.findAll();
 
         return allOrders.stream().map(OrderResponseDto::toDto).toList();
+    }
+
+    public OrderResponseDto checkedDeliveryState(Long orderId, Long userId) {
+        User user = userRepository.findByIdOrElseThrows(userId);
+        Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
+
+        if (!user.getId().equals(userId))    {
+            throw new CustomException(OrderErrorCode.NOT_FOUND);
+        }
+
+        return OrderResponseDto.toDto(order);
     }
 }

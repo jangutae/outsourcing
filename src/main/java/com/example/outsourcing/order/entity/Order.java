@@ -4,6 +4,7 @@ package com.example.outsourcing.order.entity;
 import com.example.outsourcing.common.entity.BaseEntity;
 import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.order.enums.DeliveryState;
+import com.example.outsourcing.review.entity.Review;
 import com.example.outsourcing.store.entity.Store;
 import com.example.outsourcing.user.entity.User;
 import jakarta.persistence.*;
@@ -48,6 +49,7 @@ public class Order extends BaseEntity {
 //    @OneToOne
 //    @JoinColumn(name = "review_id")
 //    Review review;
+
 
     @Setter
     @Column(name = "state", nullable = false)

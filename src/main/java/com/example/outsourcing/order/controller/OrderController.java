@@ -59,4 +59,16 @@ public class OrderController {
 
         return ResponseEntity.ok().body(orderResponseDto);
     }
+
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<OrderResponseDto> checkDeliveryState(
+            @PathVariable Long orderId,
+            HttpServletRequest httpServletRequest) {
+        HttpSession userSession = httpServletRequest.getSession(false);
+        Long userId = (Long) userSession.getAttribute("id");
+
+        OrderResponseDto orderResponseDto = orderService.checkedDeliveryState(orderId, userId);
+
+        return ResponseEntity.ok().body(orderResponseDto);
+    }
 }

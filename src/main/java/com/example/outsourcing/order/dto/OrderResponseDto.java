@@ -7,6 +7,8 @@ public record OrderResponseDto(
         Long id,
         Long userId,
         Long menuId,
+        String storeName,
+        String menuName,
         Integer orderPrice,
         DeliveryState state) {
 
@@ -15,6 +17,8 @@ public record OrderResponseDto(
                 order.getId(),
                 order.getUser().getId(),
                 order.getMenu().getId(),
+                order.getStore().getStoreName(),
+                order.getMenu().getMenuName(),
                 order.getOrderPrice(),
                 order.getState());
     }

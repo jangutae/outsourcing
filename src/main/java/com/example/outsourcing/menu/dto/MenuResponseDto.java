@@ -8,6 +8,7 @@ import lombok.Builder;
 public record MenuResponseDto(
         Long menuId,
         Long storeId,
+        String storeName,
         String menuName,
         Integer price,
         StateType state) {
@@ -16,6 +17,7 @@ public record MenuResponseDto(
         return MenuResponseDto.builder()
                 .menuId(menu.getId())
                 .storeId(menu.getStore().getId())
+                .storeName(menu.getStore().getStoreName())
                 .menuName(menu.getMenuName())
                 .price(menu.getPrice())
                 .state(menu.getState())
