@@ -24,10 +24,6 @@ public class Review extends BaseEntity {
     private String storeName;
     private String menuName;
 
-//    @ManyToOne
-//    @JoinColumn(name="user_id")
-//    private User user;
-//
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;

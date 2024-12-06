@@ -4,6 +4,7 @@ import com.example.outsourcing.common.constants.AccountRole;
 import com.example.outsourcing.common.exception.CustomException;
 import com.example.outsourcing.common.exception.ReviewErrorCode;
 import com.example.outsourcing.order.entity.Order;
+import com.example.outsourcing.order.enums.DeliveryState;
 import com.example.outsourcing.order.repository.OrderRepository;
 import com.example.outsourcing.review.dto.ReviewResponseDto;
 import com.example.outsourcing.review.entity.Review;
@@ -29,36 +30,47 @@ public class ReviewService {
     private final OrderRepository orderRepository;
 
     // 리뷰 등록
-    public ReviewResponseDto createReview(Long userId, Long orderId, Integer star, String contents){
+    public ReviewResponseDto createReview(Long userId, Long orderId, Integer star, String contents) {
 
         Order orderById = orderRepository.findOrderByIdOrElseThrow(orderId);
         User userById = userRepository.findByIdOrElseThrows(userId);
 
-        if(userById.getRole() == AccountRole.USER) {
-            Review review = new Review(star, contents, orderById);
-            Review savedReview = reviewRepository.save(review);
+        if (userById.getId() == orderById.getUser().getId()
+                && orderById.getState() == DeliveryState.ORDER_COMPLETE
+        ) {
+            if (userById.getRole() == AccountRole.USER) {
+                Review review = new Review(star, contents, orderById);
+                Review savedReview = reviewRepository.save(review);
 
-            return new ReviewResponseDto(
-              savedReview.getId(),
-              savedReview.getStar(),
-              savedReview.getContents(),
-              savedReview.getOrder().getUser().getId(),
-              savedReview.getOrder().getId(),
-              savedReview.getOrder().getMenu().getMenuName(),
-              savedReview.getCreatedAt()
-            );
-        } else  {
-            throw new CustomException(ReviewErrorCode.INVALID_OWNER);
+                return new ReviewResponseDto(
+                        savedReview.getId(),
+                        savedReview.getStar(),
+                        savedReview.getContents(),
+                        savedReview.getOrder().getUser().getId(),
+                        savedReview.getOrder().getId(),
+                        savedReview.getOrder().getMenu().getMenuName(),
+                        savedReview.getCreatedAt()
+                );
+            } else {
+                throw new CustomException(ReviewErrorCode.INVALID_OWNER);
+            }
+        } else {
+            throw new CustomException(ReviewErrorCode.INVALID_NOT_ME);
         }
+
     }
 
     // 리뷰 조회 - 본인 작성한 리뷰는 제외
     public List<ReviewResponseDto> readAllReview(Long userId, Long orderId) {
 //        Order orderByIdOrElseThrow = orderRepository.findOrderByIdOrElseThrow(orderId);
 
+
+        Long orderUser = reviewRepository.findByOrderId(orderId).getUserId();
+
+
         List<Review> allByOrderId = reviewRepository.findAllByOrderIdOrderByCreatedAtDesc(orderId);
         List<ReviewResponseDto> responseDtos = new ArrayList<>();
-        for(Review item : allByOrderId){
+        for (Review item : allByOrderId) {
             ReviewResponseDto reviewResponseDto = new ReviewResponseDto(
                     item.getId(),
                     item.getStar(),
@@ -73,9 +85,6 @@ public class ReviewService {
 
         return responseDtos;
     }
-
-
-
 
 
 //    public ReviewResponseDto createReview(Long id, Integer star, String contents, Long userId, Long menuId, String state, Long storeId, String menuName) {
