@@ -9,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
+/**
+ * 사용자 엔티티 클래스.
+ */
 @Entity
 @Getter
 @Table(name = "user")
@@ -38,6 +40,14 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AccountStatus state;
 
+    /**
+     * 새로운 사용자 객체를 생성하는 생성자.
+     * @param name 사용자 이름
+     * @param email 사용자 이메일
+     * @param password 사용자 비밀번호
+     * @param role 사용자 역할
+     * @param state 사용자 상태
+     */
     public User(String name, String email, String password, AccountRole role, AccountStatus state) {
         this.name = name;
         this.email = email;
@@ -46,8 +56,11 @@ public class User extends BaseEntity {
         this.state = state;
     }
 
+    /**
+     * 사용자 계정을 비활성화하는 메소드.
+     * @param accountStatus 비활성화할 상태
+     */
     public void disableUserAccount(AccountStatus accountStatus) {
         this.state = accountStatus;
     }
-
 }
