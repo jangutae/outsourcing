@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +29,9 @@ public class Store extends BaseEntity {
     @Column(nullable = false)
     private Integer minPrice;
     @Column(nullable = false)
-    private String openTime;
+    private LocalTime openTime;
     @Column(nullable = false)
-    private String closeTime;
+    private LocalTime closeTime;
     @Enumerated(EnumType.STRING)
     private State state;
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
