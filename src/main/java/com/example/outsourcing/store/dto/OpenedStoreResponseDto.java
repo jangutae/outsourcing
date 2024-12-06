@@ -4,6 +4,8 @@ import com.example.outsourcing.store.entity.Store;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
+
 @Getter
 @NoArgsConstructor
 public class OpenedStoreResponseDto {
@@ -12,8 +14,8 @@ public class OpenedStoreResponseDto {
     private Long userId;
     private String storeName;
     private Integer minPrice;
-    private String openTime;
-    private String closeTime;
+    private LocalTime openTime;
+    private LocalTime closeTime;
 
     public OpenedStoreResponseDto(Store store) {
 
