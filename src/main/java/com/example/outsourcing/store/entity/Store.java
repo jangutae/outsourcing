@@ -39,7 +39,7 @@ public class Store extends BaseEntity {
     private LocalTime closeTime;
 
     @Enumerated(EnumType.STRING)
-    private State state;
+    private StoreState storeState;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
@@ -51,7 +51,7 @@ public class Store extends BaseEntity {
         this.minPrice = openedStoreRequestDto.getMinPrice();
         this.openTime = openedStoreRequestDto.getOpenTime();
         this.closeTime = openedStoreRequestDto.getCloseTime();
-        this.state = State.OPENED;
+        this.storeState = StoreState.OPENED;
     }
 
     public void updateInfo(OpenedStoreResponseDto openedStoreResponseDto) {
@@ -64,6 +64,6 @@ public class Store extends BaseEntity {
 
     public void close() {
 
-        this.state = State.CLOSED;
+        this.storeState = StoreState.CLOSED;
     }
 }
