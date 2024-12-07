@@ -83,6 +83,6 @@ public class MenuService {
     메뉴 상태가 DELETE 인 경우는 제외
      */
     public List<Menu> findAllWithoutDeleteByStoreId(Long storeId) {
-        return menuRepository.findAllByStoreIdAndState(storeId, Menu.MenuState.DELETED);
+        return menuRepository.findAllByStoreIdAndState(storeId, Menu.MenuState.ORDER_POSSIBLE);
     }
 }
