@@ -39,12 +39,12 @@ public class ReviewController {
 
     @GetMapping("/{storeId}")
     public ResponseEntity<List<ReviewResponseDto>> readAllReviewByStoreId(
-            @PathVariable Long storeId,
             @SessionAttribute(value = "id") User user,
-            @RequestParam(name = "minStar") Double minStar,
-            @RequestParam(name = "maxStar") Double maxStar
+            @PathVariable Long storeId,
+            @RequestParam(name = "minStar") Integer minStar,
+            @RequestParam(name = "maxStar") Integer maxStar
     ) {
-        List<ReviewResponseDto> allReviewByStoreId = reviewService.readAllReviewByStoreId(user.getId(), storeId, minStar, maxStar);
+        List<ReviewResponseDto> allReviewByStoreId = reviewService.readAllReviewByStoreId(user.getId(), storeId,  minStar, maxStar);
 
         return ResponseEntity.ok().body(allReviewByStoreId);
     }

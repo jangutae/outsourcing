@@ -82,7 +82,7 @@ public class Order extends BaseEntity {
         return this.orderTime.isAfter(menu.getStore().getCloseTime());
     }
 
-    public boolean isBossAccessPossible(Order order) {
+    public boolean isBossAccessPossible(User user) {
         return user.getRole().equals(AccountRole.BOSS);
     }
 

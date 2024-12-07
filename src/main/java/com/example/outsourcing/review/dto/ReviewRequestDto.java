@@ -3,9 +3,9 @@ package com.example.outsourcing.review.dto;
 import lombok.Getter;
 
 @Getter
-public class ReviewRequestDto {
+public record ReviewRequestDto(
+        Integer star,
+        String contents
+)
+{ }
 
-    private Double star;
-    private String contents;
-
-}

@@ -9,7 +9,7 @@ import com.example.outsourcing.review.dto.ReviewRequestDto;
 import com.example.outsourcing.review.dto.ReviewResponseDto;
 import com.example.outsourcing.review.entity.Review;
 import com.example.outsourcing.review.repository.ReviewRepository;
-import com.example.outsourcing.store.repository.StoreRepository;
+import com.example.outsourcing.user.entity.User;
 import com.example.outsourcing.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,16 +23,16 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
     private final OrderRepository orderRepository;
-    private final StoreRepository storeRepository;
+    private final UserRepository userRepository;
 
     // 리뷰 등록
     public ReviewResponseDto createReview(Long userId, Long orderId, ReviewRequestDto requestDto) {
+        User user = userRepository.findByIdOrElseThrows(userId);
         Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
-        Review review = new Review(requestDto.getStar(), requestDto.getContents());
+        Review review = new Review(user, order.getStore(), order, requestDto.getStar(), requestDto.getContents());
 
-        if (order.isBossAccessPossible(order)) {
+        if (order.isBossAccessPossible(user)) {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_BOSS);
         }
 
@@ -45,64 +45,11 @@ public class ReviewService {
         return ReviewResponseDto.toDto(review);
     }
 
-    public List<ReviewResponseDto> readAllReviewByStoreId(Long storeId, Long userId, Double minStar, Double maxStar) {
+    public List<ReviewResponseDto> readAllReviewByStoreId(Long userId, Long storeId, Integer minStar, Integer maxStar) {
         List<Review> allReview = reviewRepository.findAllReviewAndWithoutMineByStoreId(storeId, minStar, maxStar);
 
-        allReview.removeIf(Review -> Review.getOrder().getUser().getId().equals(userId));
-//        for (Review newReview : allReview) {
-//            if (store.getId().equals(userId)) {
-//                allReview.remove(newReview);
-//            }
-//        }
+        allReview.removeIf(Review -> Review.getUser().getId().equals(userId));
+
         return allReview.stream().map(ReviewResponseDto::toDto).toList();
     }
-
-//        // 리뷰 조회 - 본인 작성한 리뷰는 제외
-//        public List<ReviewResponseDto> readAllReview (Long storeId, Long userId){
-//            List<Review> allByOrderId = reviewRepository.findAllByStoreIdOrderByCreatedAtDesc(storeId, userId);
-//            return makeResponseDtos(allByOrderId);
-//        }
-//
-//        //리뷰 조회 - 별점으로 조회 (본인 작성한 리뷰 제외하지 않음)
-//        public List<ReviewResponseDto> readByStar (Long storeId, Long userId, Integer star1, Integer star2){
-//            List<Review> allByStar = reviewRepository.findAllByStoreIdAndByStarBetween(storeId, userId, star1, star2);
-//            return makeResponseDtos(allByStar);
-//        }
-
-        // 리스트 만드는 공통부분 메소드
-//        public List<ReviewResponseDto> makeResponseDtos (List < Review > reviews) {
-//            List<ReviewResponseDto> responseDtos = new ArrayList<>();
-//            if (!reviews.isEmpty()) {
-//                for (Review item : reviews) {
-//                    ReviewResponseDto reviewResponseDto = new ReviewResponseDto(
-//                            item.getId(),
-//                            item.getStar(),
-//                            item.getContents(),
-//                            item.getOrder().getUser().getId(),
-//                            item.getOrder().getId(),
-//                            item.getOrder().getMenu().getMenuName(),
-//                            item.getOrder().getStore().getStoreName(),
-//                            item.getCreatedAt()
-//                    );
-//                    responseDtos.add(reviewResponseDto);
-//                }
-//            } else {
-//                throw new CustomException(ReviewErrorCode.NOT_FOUND);
-//            }
-//            return responseDtos;
-//        }
-
-
-
-//    public List<ReviewResponseDto> readAllReviewByStoreId(Long storeId, Long userId, Double minStar, Double maxStar) {
-//        List<Review> allReview = reviewRepository.findAllReviewAndWithoutMineByStoreId(storeId, userId, minStar, maxStar);
-//
-//        allReview.removeIf(Review -> Review.getOrder().getUser().getId().equals(userId));
-////        for (Review newReview : allReview) {
-////            if (store.getId().equals(userId)) {
-////                allReview.remove(newReview);
-////            }
-////        }
-//        return allReview.stream().map(ReviewResponseDto::toDto).toList();
-//    }
 }

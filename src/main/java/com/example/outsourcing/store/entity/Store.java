@@ -2,6 +2,7 @@ package com.example.outsourcing.store.entity;
 
 import com.example.outsourcing.common.entity.BaseEntity;
 import com.example.outsourcing.menu.entity.Menu;
+import com.example.outsourcing.review.entity.Review;
 import com.example.outsourcing.store.dto.OpenedStoreRequestDto;
 import com.example.outsourcing.store.dto.OpenedStoreResponseDto;
 import com.example.outsourcing.user.entity.User;
@@ -43,6 +44,9 @@ public class Store extends BaseEntity {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> ReviewList = new ArrayList<>();
 
     public Store(User user, OpenedStoreRequestDto openedStoreRequestDto) {
 
