@@ -33,7 +33,7 @@ public class OrderService {
         Order createdOrder = new Order(user, menu.getStore(), menu, Order.DeliveryState.ORDER_COMPLETE);
 //
         // 사용자만 음식을 주문할 수 있습니다.
-        if (!menu.isBossAccessPossible(user)) {
+        if (menu.isBossAccessPossible(user)) {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_BOSS);
         }
 
@@ -61,9 +61,9 @@ public class OrderService {
     public String updatedDeliveryState(Long userId, Long menuId, Long orderId, Order.DeliveryState state) {
         User user = userRepository.findByIdOrElseThrows(userId);
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
-        Order order = orderRepository.findOrderByIdAndState(orderId, state);
+        Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
 
-        if (menu.isBossAccessPossible(user)) {
+        if (!menu.isBossAccessPossible(user)) {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_USER);
         }
 

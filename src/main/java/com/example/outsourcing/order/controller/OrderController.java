@@ -1,10 +1,10 @@
 package com.example.outsourcing.order.controller;
 
 import com.example.outsourcing.order.dto.OrderResponseDto;
-import com.example.outsourcing.order.entity.Order;
+import com.example.outsourcing.order.dto.UpdateDeliveryRequestDto;
 import com.example.outsourcing.order.service.OrderService;
 import com.example.outsourcing.user.entity.User;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +33,10 @@ public class OrderController {
     public ResponseEntity<String> updateDeliveryState(
             @PathVariable Long menuId,
             @PathVariable Long orderId,
-            @RequestBody @NotNull(message = "주문상태값은 필수값 입니다.") Order.DeliveryState state,
+            @Valid @RequestBody UpdateDeliveryRequestDto requestDto,
             @SessionAttribute(value = "id") User user
     ) {
-        String deliveryState = orderService.updatedDeliveryState(user.getId(), menuId, orderId, state);
+        String deliveryState = orderService.updatedDeliveryState(user.getId(), menuId, orderId, requestDto.state());
 
         return ResponseEntity.ok().body("주문 상태가 " + deliveryState + " 로 변경되었습니다.");
     }

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "menus")
@@ -34,7 +35,7 @@ public class Menu extends BaseEntity {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @OneToMany(mappedBy = "menu")
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> order;
 
     @Setter

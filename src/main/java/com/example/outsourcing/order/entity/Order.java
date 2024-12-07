@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -42,9 +44,8 @@ public class Order extends BaseEntity {
     private LocalTime orderTime = LocalTime.now();
 
 
-    @OneToOne
-    @JoinColumn(name = "review_id")
-    private Review review;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviewLiST = new ArrayList<>();
 
 
     @Setter
