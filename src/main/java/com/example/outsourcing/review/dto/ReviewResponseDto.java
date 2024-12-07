@@ -1,24 +1,29 @@
 package com.example.outsourcing.review.dto;
 
+import com.example.outsourcing.review.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@Getter
-public class ReviewResponseDto {
+public record ReviewResponseDto(
+        Long id,
+        Long userId,
+        Long storeId,
+        Double star,
+        String contents,
+        String storeName,
+        String menuName
+) {
 
-    private Long id;
-    private Integer star;
-    private String contents;
-
-    private Long userId;
-    private Long storeId;
-    private String storeName;
-    private String menuName;
-
-
-    private LocalDateTime createdAt;
-
+    public static ReviewResponseDto toDto(Review review) {
+        return new ReviewResponseDto(
+                review.getId(),
+                review.getOrder().getUser().getId(),
+                review.getOrder().getStore().getId(),
+                review.getStar(),
+                review.getContents(),
+                review.getOrder().getStore().getStoreName(),
+                review.getOrder().getMenu().getMenuName());
+    }
 }

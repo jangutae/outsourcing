@@ -2,11 +2,11 @@ package com.example.outsourcing.review.entity;
 
 import com.example.outsourcing.common.entity.BaseEntity;
 import com.example.outsourcing.order.entity.Order;
-import com.example.outsourcing.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -17,22 +17,23 @@ public class Review extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer star;
+    @Column(name = "contents", nullable = false)
     private String contents;
 
-    private Long userId;
-    private Long storeId;
+    @Column(name = "star_rate", nullable = false)
+    private Double star;
 
     @ManyToOne
     @JoinColumn(name = "order_id",unique = true)
     private Order order;
 
-    public Review(Integer star, String contents, Order order){
+    @Column(name = "created_at", updatable = false, nullable = false)
+    LocalDateTime createdAt;
+
+
+
+    public Review(Double star, String contents) {
         this.star = star;
         this.contents = contents;
-        this.order = order;
-        this.userId = order.getUser().getId();
-        this.storeId = order.getStore().getId();
     }
-
 }

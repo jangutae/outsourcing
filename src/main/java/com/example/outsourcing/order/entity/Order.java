@@ -1,6 +1,7 @@
 package com.example.outsourcing.order.entity;
 
 
+import com.example.outsourcing.common.constants.AccountRole;
 import com.example.outsourcing.common.entity.BaseEntity;
 import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.review.entity.Review;
@@ -80,4 +81,13 @@ public class Order extends BaseEntity {
     public boolean isAlreadyClosed(Menu menu) {
         return this.orderTime.isAfter(menu.getStore().getCloseTime());
     }
+
+    public boolean isBossAccessPossible(Order order) {
+        return user.getRole().equals(AccountRole.BOSS);
+    }
+
+    public boolean isAvailable(Order order) {
+        return order.getState().equals(DeliveryState.DELIVERY_COMPLETE);
+    }
+
 }
