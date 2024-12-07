@@ -9,7 +9,7 @@ import com.example.outsourcing.store.dto.OpenedStoreRequestDto;
 import com.example.outsourcing.store.dto.OpenedStoreResponseDto;
 import com.example.outsourcing.store.dto.StoreDetailInfoResponseDto;
 import com.example.outsourcing.store.dto.StoreInfoResponseDto;
-import com.example.outsourcing.store.entity.State;
+import com.example.outsourcing.store.entity.StoreState;
 import com.example.outsourcing.store.entity.Store;
 import com.example.outsourcing.store.repository.StoreRepository;
 import com.example.outsourcing.user.entity.User;
@@ -36,7 +36,7 @@ public class StoreService {
 
         User user = userService.findOwnerById(userId);
         Store store = new Store(user, openedStoreRequestDto);
-        Integer storeCount = storeRepository.countStoreByUser_idAndState(userId, State.OPENED);
+        Integer storeCount = storeRepository.countStoreByUser_idAndStoreState(userId, StoreState.OPENED);
         if (storeCount > 2) {
             throw new CustomException(StoreErrorCode.OUT_RANGE);
         }
@@ -47,7 +47,7 @@ public class StoreService {
 
     public List<StoreInfoResponseDto> showStoreList() {
 
-        List<Store> storeList = storeRepository.findAllByState(State.OPENED);
+        List<Store> storeList = storeRepository.findAllByStoreState(StoreState.OPENED);
         return storeList
                 .stream()
                 .map(StoreInfoResponseDto::toDto)
@@ -57,7 +57,7 @@ public class StoreService {
 
     public List<StoreInfoResponseDto> searchStoreList(String text) {
 
-        List<Store> storeList = storeRepository.findAllByStoreNameContainsAndState(text, State.OPENED);
+        List<Store> storeList = storeRepository.findAllByStoreNameContainsAndStoreState(text, StoreState.OPENED);
         return storeList
                 .stream()
                 .map(StoreInfoResponseDto::toDto)
@@ -70,7 +70,7 @@ public class StoreService {
 
         List<Menu> menuList = menuService.findAllWithoutDeleteByStoreId(id);
         List<MenuResponseDto> list = menuList.stream().map(MenuResponseDto::toDto).toList();
-        Store store = storeRepository.findByAndStateOrElseThrow(id, State.OPENED);
+        Store store = storeRepository.findByAndStateOrElseThrow(id, StoreState.OPENED);
         return new StoreDetailInfoResponseDto(store, list);
 
     }
@@ -79,7 +79,7 @@ public class StoreService {
     public void updateStoreInfo(Long userId, Long id, OpenedStoreResponseDto openedStoreResponseDto) {
 
         userService.findOwnerById(userId);
-        Store store = storeRepository.findByAndStateOrElseThrow(id, State.OPENED);
+        Store store = storeRepository.findByAndStateOrElseThrow(id, StoreState.OPENED);
         store.updateInfo(openedStoreResponseDto);
 
     }
@@ -88,7 +88,7 @@ public class StoreService {
     public void close(Long id, Long userId) {
 
         userService.findOwnerById(userId);
-        Store store = storeRepository.findByAndStateOrElseThrow(id, State.OPENED);
+        Store store = storeRepository.findByAndStateOrElseThrow(id, StoreState.OPENED);
         store.close();
 
     }
