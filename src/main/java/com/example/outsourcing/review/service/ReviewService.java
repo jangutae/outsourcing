@@ -36,7 +36,7 @@ public class ReviewService {
         Review byOrderId = reviewRepository.findByOrderId(orderId);
 
         if (userById.getId() == orderById.getUser().getId()
-                && orderById.getState() == DeliveryState.ORDER_COMPLETE
+                && orderById.getState().equals(DeliveryState.ORDER_COMPLETE)
         ) {
             if (userById.getRole() == AccountRole.USER) {
                 Review review = new Review(star, contents, orderById);

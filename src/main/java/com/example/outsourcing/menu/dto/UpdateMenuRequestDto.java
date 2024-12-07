@@ -12,7 +12,6 @@ public record UpdateMenuRequestDto(
         String menuName,
 
         @NotNull(message = "변경할 가격의 메뉴는 필수값 입니다.")
-        @Size(min = 1, max = 30000)
         Integer price
 ) {
 
