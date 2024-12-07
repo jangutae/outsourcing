@@ -1,7 +1,6 @@
 package com.example.outsourcing.menu.dto;
 
 import com.example.outsourcing.menu.entity.Menu;
-import com.example.outsourcing.menu.enums.StateType;
 import lombok.Builder;
 
 @Builder
@@ -11,7 +10,7 @@ public record MenuResponseDto(
         String storeName,
         String menuName,
         Integer price,
-        StateType state) {
+        Menu.MenuState state) {
 
     public static MenuResponseDto toDto(Menu menu) {
         return MenuResponseDto.builder()

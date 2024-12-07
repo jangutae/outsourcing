@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
-   default Menu findMenuByIdOrElseThrow(Long menuId) {
-       return findById(menuId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
-   }
+    default Menu findMenuByIdOrElseThrow(Long menuId) {
+        return findById(menuId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
+    }
 
-    List<Menu> findAllByStoreId(Long storeId);
+    List<Menu> findAllByStoreIdAndState(Long storeId, Menu.MenuState state);
 }

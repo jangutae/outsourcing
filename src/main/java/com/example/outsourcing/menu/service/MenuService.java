@@ -1,13 +1,12 @@
 package com.example.outsourcing.menu.service;
 
-import com.example.outsourcing.common.constants.AccountRole;
 import com.example.outsourcing.common.exception.CustomException;
 import com.example.outsourcing.common.exception.MenuErrorCode;
+import com.example.outsourcing.common.exception.StoreErrorCode;
 import com.example.outsourcing.menu.dto.CreateMenuRequestDto;
 import com.example.outsourcing.menu.dto.MenuResponseDto;
 import com.example.outsourcing.menu.dto.UpdateMenuRequestDto;
 import com.example.outsourcing.menu.entity.Menu;
-import com.example.outsourcing.menu.enums.StateType;
 import com.example.outsourcing.menu.repository.MenuRepository;
 import com.example.outsourcing.store.entity.Store;
 import com.example.outsourcing.store.repository.StoreRepository;
@@ -17,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,34 +31,25 @@ public class MenuService {
     @Transactional
     public MenuResponseDto createdMenu(Long userId, Long storeId, CreateMenuRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
+        Menu menu = new Menu(store, requestDto.menuName(), requestDto.price(), Menu.MenuState.ORDER_POSSIBLE);
 
-        // 사장님이 아닌 경우 메뉴생성 접근 불가
-        if (!user.getRole().equals(AccountRole.BOSS)) {
+        if (!menu.isBossAccessPossible(user)) {
             throw new CustomException(MenuErrorCode.NOT_ACCESS);
         }
 
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
-
-        Menu menu = new Menu(store, requestDto.menuName(), requestDto.price(), StateType.ORDER_POSSIBLE);
         menuRepository.save(menu);
-
         return MenuResponseDto.toDto(menu);
     }
 
     // 메뉴 수정
     @Transactional
-    public MenuResponseDto updatedMenu(Long userId, Long storeId, Long menuId,  UpdateMenuRequestDto requestDto) {
+    public MenuResponseDto updatedMenu(Long userId, Long menuId, UpdateMenuRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
 
         // 사장은 다른 사장 계정에 접근 불가
-        if (!user.getId().equals(userId)) {
-            throw new CustomException(MenuErrorCode.NOT_ACCESS);
-        }
-
-        // 가게가 일치 하지 않을 경우 접근 불가
-        if (!store.getId().equals(storeId)) {
+        if (!menu.isBossAccessPossible(user)) {
             throw new CustomException(MenuErrorCode.NOT_ACCESS);
         }
 
@@ -71,23 +61,18 @@ public class MenuService {
 
     // 메뉴 상태 변경
     @Transactional
-    public String updatedState(Long userId, Long storeId, Long menuId) {
+    public String updatedState(Long userId, Long menuId) {
         User user = userRepository.findByIdOrElseThrows(userId);
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
 
-        if (!user.getId().equals(userId)) {
+        if (!menu.isBossAccessPossible(user)) {
             throw new CustomException(MenuErrorCode.NOT_ACCESS);
         }
 
-        if (!store.getId().equals(storeId)) {
-            throw new CustomException(MenuErrorCode.NOT_ACCESS);
-        }
-
-        if (menu.getState().equals(StateType.ORDER_POSSIBLE)) {
-            menu.setState(StateType.DELETED);
+        if (menu.getState().equals(Menu.MenuState.ORDER_POSSIBLE)) {
+            menu.setState(Menu.MenuState.DELETED);
         } else {
-            menu.setState(StateType.ORDER_POSSIBLE);
+            menu.setState(Menu.MenuState.ORDER_POSSIBLE);
         }
 
         menuRepository.save(menu);
@@ -98,14 +83,6 @@ public class MenuService {
     메뉴 상태가 DELETE 인 경우는 제외
      */
     public List<Menu> findAllWithoutDeleteByStoreId(Long storeId) {
-        List<Menu> allByStoreId = menuRepository.findAllByStoreId(storeId);
-        List<Menu> withoutDelete = new ArrayList<>();
-
-        for (Menu menu : allByStoreId) {
-            if (menu.getState().equals(StateType.ORDER_POSSIBLE)) {
-                withoutDelete.add(menu);
-            }
-        }
-        return withoutDelete;
+        return menuRepository.findAllByStoreIdAndState(storeId, Menu.MenuState.DELETED);
     }
 }

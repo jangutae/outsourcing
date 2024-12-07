@@ -3,7 +3,6 @@ package com.example.outsourcing.order.entity;
 
 import com.example.outsourcing.common.entity.BaseEntity;
 import com.example.outsourcing.menu.entity.Menu;
-import com.example.outsourcing.order.enums.DeliveryState;
 import com.example.outsourcing.review.entity.Review;
 import com.example.outsourcing.store.entity.Store;
 import com.example.outsourcing.user.entity.User;
@@ -24,34 +23,34 @@ public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "menu_id")
-    Menu menu;
+    private Menu menu;
 
     @ManyToOne
     @JoinColumn(name = "store_id")
-    Store store;
+    private Store store;
 
 
     @Column(name = "order_time")
-    LocalTime orderTime = LocalTime.now();
+    private LocalTime orderTime = LocalTime.now();
 
 
     @OneToOne
     @JoinColumn(name = "review_id")
-    Review review;
+    private Review review;
 
 
     @Setter
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
-    DeliveryState state;
+    private DeliveryState state;
 
     public Order(User user, Store store, Menu menu,  DeliveryState state) {
         this.user = user;
@@ -60,13 +59,24 @@ public class Order extends BaseEntity {
         this.state = state;
     }
 
+    public enum DeliveryState {
+        ORDER_COMPLETE,
+        ORDER_ACCEPT,
+        STILL_COOKING,
+        COOK_DONE,
+        STILL_DELIVERING,
+        DELIVERY_COMPLETE
+    }
 
-    public LocalTime stringToLocaltime(String time) {
-        String[] openTimeSplit = time.split(":");
+    public boolean isOverMinPrice(Menu menu) {
+        return this.menu.getPrice() > menu.getStore().getMinPrice();
+    }
 
-        int hour = Integer.parseInt(openTimeSplit[0]);
-        int minute = Integer.parseInt(openTimeSplit[1]);
+    public boolean isNotOpened(Menu menu) {
+        return this.orderTime.isBefore(menu.getStore().getOpenTime());
+    }
 
-        return LocalTime.of(hour, minute);
+    public boolean isAlreadyClosed(Menu menu) {
+        return this.orderTime.isAfter(menu.getStore().getCloseTime());
     }
 }

@@ -1,7 +1,6 @@
 package com.example.outsourcing.order.dto;
 
 import com.example.outsourcing.order.entity.Order;
-import com.example.outsourcing.order.enums.DeliveryState;
 
 public record OrderResponseDto(
         Long id,
@@ -9,7 +8,7 @@ public record OrderResponseDto(
         Long menuId,
         String storeName,
         String menuName,
-        DeliveryState state) {
+        Order.DeliveryState state) {
 
     public static OrderResponseDto toDto(Order order) {
         return new OrderResponseDto(
