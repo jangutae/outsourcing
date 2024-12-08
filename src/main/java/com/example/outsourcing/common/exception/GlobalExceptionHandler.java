@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -52,6 +53,14 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<Object> handleSQLConstraintException(SQLIntegrityConstraintViolationException e){
+        ErrorCode errorCode = CommonErrorCode.CONSTRAINT_DUPLICATION_ERROR;
+        return handleExceptionInternal(errorCode, errorCode.getMessage());
+
+    }
+
 
     private String getErrorCodeForFieldError(FieldError fieldError) {
 
