@@ -1,5 +1,6 @@
 package com.example.outsourcing.store.service;
 
+import com.example.outsourcing.common.constants.AccountStatus;
 import com.example.outsourcing.common.exception.CustomException;
 import com.example.outsourcing.common.exception.StoreErrorCode;
 import com.example.outsourcing.menu.dto.MenuResponseDto;
@@ -47,7 +48,7 @@ public class StoreService {
 
     public List<StoreInfoResponseDto> showStoreList() {
 
-        List<Store> storeList = storeRepository.findAllByStoreState(StoreState.OPENED);
+        List<Store> storeList = storeRepository.findAllByUser_stateAndStoreState(AccountStatus.USE,StoreState.OPENED);
         return storeList
                 .stream()
                 .map(StoreInfoResponseDto::toDto)
@@ -57,7 +58,7 @@ public class StoreService {
 
     public List<StoreInfoResponseDto> searchStoreList(String text) {
 
-        List<Store> storeList = storeRepository.findAllByStoreNameContainsAndStoreState(text, StoreState.OPENED);
+        List<Store> storeList = storeRepository.findAllByUser_stateAndStoreNameContainsAndStoreState(AccountStatus.USE,text, StoreState.OPENED);
         return storeList
                 .stream()
                 .map(StoreInfoResponseDto::toDto)
