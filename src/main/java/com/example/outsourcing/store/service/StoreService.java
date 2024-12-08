@@ -71,7 +71,7 @@ public class StoreService {
 
         List<Menu> menuList = menuService.findAllWithoutDeleteByStoreId(id);
         List<MenuResponseDto> list = menuList.stream().map(MenuResponseDto::toDto).toList();
-        Store store = storeRepository.findByAndStateOrElseThrow(id, StoreState.OPENED);
+        Store store = storeRepository.findByUser_stateAndIdAndStoreStateOrElseThrow(AccountStatus.USE,id, StoreState.OPENED);
         return new StoreDetailInfoResponseDto(store, list);
 
     }
