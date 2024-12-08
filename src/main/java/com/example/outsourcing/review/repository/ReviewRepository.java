@@ -14,25 +14,34 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    // 주문번호에 해당하는 Review 찾기
     Review findByOrderId(Long orderId);
 
+    // 가게별 조회 (내 아이디 제외, 최신순으로 정렬 )
     @Query(value = "select review " +
             "from Review review " +
             "where review.storeId =:storeId and review.userId != :userId " +
             "order by review.createdAt desc")
     List<Review> findAllByStoreIdOrderByCreatedAtDesc(
-            Long storeId, Long userId);
+            @Param("storeId") Long storeId, @Param("userId") Long userId);
 
+    // 가게별 조회 (내 아이디 제외. 최신순으로 정렬 )  > 조회할 리뷰가 1개 일 때
+    @Query(value = "select review " +
+            "from Review review " +
+            "where review.storeId=:storeId and review.userId !=:userId and review.star in (:star) " +
+            "order by review.createdAt desc " )
+    List<Review> findAllByStoreIdAndByStar(Long storeId, Long userId, Integer star);
 
+    // 가게별 조회 (내 아이디 제외. 최신순으로 정렬 )  > 조회할 리뷰가 2개 일 때 (해당 범위로 조회)
     @Query(value = "select review " +
             "from Review review " +
             "where review.storeId=:storeId and review.userId !=:userId and review.star between (:star1) and (:star2) " +
             "order by review.createdAt desc ")
     List<Review> findAllByStoreIdAndByStarBetween(
-            Long storeId,
-            Long userId,
-            Integer star1,
-            Integer star2);
+            @Param("storeId") Long storeId,
+            @Param("userId") Long userId,
+            @Param("star1") Integer star1,
+            @Param("star2") Integer star2);
 
 
 }

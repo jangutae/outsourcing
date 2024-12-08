@@ -46,7 +46,14 @@ public class ReviewController {
 
         if (star != null) {
             // 파라미터 값이(별점이) 있을 경우
-            responseDtos = reviewService.readByStar(storeId, userId, star.get(0), star.get(1));
+            switch (star.size()) {
+                case 1 :
+                    responseDtos = reviewService.readByOneStar (storeId, userId, star.get(0));
+                    break;
+                case 2:
+                    responseDtos = reviewService.readByStar(storeId, userId, star.get(0), star.get(1));
+                    break;
+            }
         } else {
             //파라미터 값이 없을 경우 (별점없이 가게로만 조회할 때)
             responseDtos = reviewService.readAllReview(storeId, userId);

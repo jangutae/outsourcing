@@ -13,7 +13,6 @@ public enum ReviewErrorCode implements ErrorCode{
     INVALID_OWNER(HttpStatus.BAD_REQUEST, "사용자만 리뷰를 작성할 수 있습니다. 사장님 안돼요"),
     INVALID_OTHER_STATE(HttpStatus.BAD_REQUEST,"배달완료후에 리뷰를 작성할 수 있습니다.");
 
-
     private final HttpStatus httpStatus;
     private final String message;
 }
