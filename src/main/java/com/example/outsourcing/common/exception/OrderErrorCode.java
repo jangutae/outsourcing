@@ -21,7 +21,9 @@ public enum OrderErrorCode implements ErrorCode {
 
     MIN_PRICE_NOT_SATISFIED(HttpStatus.BAD_REQUEST,"최소 주문 금액을 충족하지 못했습니다."),
 
-    DEACTIVATED_USER(HttpStatus.FORBIDDEN,"탈퇴한 사용자입니다.");
+    DEACTIVATED_USER(HttpStatus.FORBIDDEN,"탈퇴한 사용자입니다."),
+
+    ALREADY_DELETED(HttpStatus.BAD_REQUEST, "이미 삭제된 메뉴 입니다.");
 
 
     private final HttpStatus httpStatus;

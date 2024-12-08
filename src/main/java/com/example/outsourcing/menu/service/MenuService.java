@@ -9,6 +9,7 @@ import com.example.outsourcing.menu.dto.UpdateMenuRequestDto;
 import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.menu.repository.MenuRepository;
 import com.example.outsourcing.store.entity.Store;
+import com.example.outsourcing.store.entity.StoreState;
 import com.example.outsourcing.store.repository.StoreRepository;
 import com.example.outsourcing.user.entity.User;
 import com.example.outsourcing.user.repository.UserRepository;
@@ -34,6 +35,10 @@ public class MenuService {
         Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
         Menu menu = new Menu(store, requestDto.menuName(), requestDto.price(), Menu.MenuState.ORDER_POSSIBLE);
 
+        if (store.getStoreState().equals(StoreState.CLOSED)) {
+            throw new CustomException(MenuErrorCode.ALREADY_DELETED);
+        }
+
         if (!menu.isBossAccessPossible(user)) {
             throw new CustomException(MenuErrorCode.NOT_ACCESS);
         }
@@ -47,6 +52,10 @@ public class MenuService {
     public MenuResponseDto updatedMenu(Long userId, Long menuId, UpdateMenuRequestDto requestDto) {
         User user = userRepository.findByIdOrElseThrows(userId);
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
+
+        if (menu.getStore().getStoreState().equals(StoreState.CLOSED)) {
+            throw new CustomException(MenuErrorCode.ALREADY_DELETED);
+        }
 
         // 사장은 다른 사장 계정에 접근 불가
         if (!menu.isBossAccessPossible(user)) {
@@ -64,6 +73,10 @@ public class MenuService {
     public String updatedState(Long userId, Long menuId) {
         User user = userRepository.findByIdOrElseThrows(userId);
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
+
+        if (menu.getStore().getStoreState().equals(StoreState.CLOSED)) {
+            throw new CustomException(MenuErrorCode.ALREADY_DELETED);
+        }
 
         if (!menu.isBossAccessPossible(user)) {
             throw new CustomException(MenuErrorCode.NOT_ACCESS);
@@ -83,6 +96,12 @@ public class MenuService {
     메뉴 상태가 DELETE 인 경우는 제외
      */
     public List<Menu> findAllWithoutDeleteByStoreId(Long storeId) {
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(MenuErrorCode.NOT_FOUND));
+
+        if (store.getStoreState().equals(StoreState.CLOSED)) {
+            throw new CustomException(MenuErrorCode.ALREADY_DELETED);
+        }
+
         return menuRepository.findAllByStoreIdAndState(storeId, Menu.MenuState.ORDER_POSSIBLE);
     }
 }

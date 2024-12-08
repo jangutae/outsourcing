@@ -23,7 +23,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
-    private final StoreRepository storeRepository;
 
     @Transactional
     public OrderResponseDto createdOrder(Long userId, Long menuId) {
@@ -31,7 +30,11 @@ public class OrderService {
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
 
         Order createdOrder = new Order(user, menu.getStore(), menu, Order.DeliveryState.ORDER_COMPLETE);
-//
+
+        if(menu.getState().equals(Menu.MenuState.DELETED)) {
+            throw new CustomException(OrderErrorCode.ALREADY_DELETED);
+        }
+
         // 사용자만 음식을 주문할 수 있습니다.
         if (menu.isBossAccessPossible(user)) {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_BOSS);
@@ -63,6 +66,10 @@ public class OrderService {
         Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
         Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
 
+        if(menu.getState().equals(Menu.MenuState.DELETED)) {
+            throw new CustomException(OrderErrorCode.ALREADY_DELETED);
+        }
+
         if (!menu.isBossAccessPossible(user)) {
             throw new CustomException(OrderErrorCode.NOT_ACCESS_USER);
         }
@@ -73,14 +80,26 @@ public class OrderService {
         return order.getState().toString();
     }
 
-    public List<OrderResponseDto> findAllOrderByUserId(Long userId) {
+    public List<OrderResponseDto> findAllOrderByUserId(Long userId, Long menuId) {
         List<Order> orderByUserId = orderRepository.findOrderByUserId(userId);
+
+        Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
+
+        if(menu.getState().equals(Menu.MenuState.DELETED)) {
+            throw new CustomException(OrderErrorCode.ALREADY_DELETED);
+        }
 
         return orderByUserId.stream().map(OrderResponseDto::toDto).toList();
     }
 
-    public OrderResponseDto checkedDeliveryState(Long orderId) {
+    public OrderResponseDto checkedDeliveryState(Long orderId, Long menuId) {
         Order order = orderRepository.findOrderByIdOrElseThrow(orderId);
+
+        Menu menu = menuRepository.findMenuByIdOrElseThrow(menuId);
+
+        if(menu.getState().equals(Menu.MenuState.DELETED)) {
+            throw new CustomException(OrderErrorCode.ALREADY_DELETED);
+        }
 
         return OrderResponseDto.toDto(order);
     }

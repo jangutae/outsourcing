@@ -36,7 +36,7 @@ public class Menu extends BaseEntity {
     private Integer price;
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> order;
+    private List<Order> order = new ArrayList<>();
 
     @Setter
     @Column(name = "state", nullable = false)

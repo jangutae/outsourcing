@@ -1,5 +1,6 @@
 package com.example.outsourcing.order.controller;
 
+import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.order.dto.OrderResponseDto;
 import com.example.outsourcing.order.dto.UpdateDeliveryRequestDto;
 import com.example.outsourcing.order.service.OrderService;
@@ -42,15 +43,21 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<List<OrderResponseDto>> findAllOrderByUserId(@SessionAttribute(value = "id") User user) {
-        List<OrderResponseDto> orderResponseDto = orderService.findAllOrderByUserId(user.getId());
+    public ResponseEntity<List<OrderResponseDto>> findAllOrderByUserId(
+            @SessionAttribute(value = "id") User user,
+            @SessionAttribute(value = "id") Menu menu
+    ) {
+        List<OrderResponseDto> orderResponseDto = orderService.findAllOrderByUserId(user.getId(), menu.getId());
 
         return ResponseEntity.ok().body(orderResponseDto);
     }
 
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<OrderResponseDto> checkDeliveryState(@PathVariable Long orderId) {
-        OrderResponseDto orderResponseDto = orderService.checkedDeliveryState(orderId);
+    public ResponseEntity<OrderResponseDto> checkDeliveryState(
+            @PathVariable Long orderId,
+            @SessionAttribute(value = "id") Menu menu
+    ) {
+        OrderResponseDto orderResponseDto = orderService.checkedDeliveryState(orderId, menu.getId());
 
         return ResponseEntity.ok().body(orderResponseDto);
     }
