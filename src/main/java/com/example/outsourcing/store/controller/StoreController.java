@@ -5,6 +5,7 @@ import com.example.outsourcing.store.dto.OpenedStoreResponseDto;
 import com.example.outsourcing.store.dto.StoreDetailInfoResponseDto;
 import com.example.outsourcing.store.dto.StoreInfoResponseDto;
 import com.example.outsourcing.store.service.StoreService;
+import com.example.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class StoreController {
 
     // 가게 창업
     @PostMapping
-    public ResponseEntity<OpenedStoreResponseDto> openStore(@Validated @RequestBody OpenedStoreRequestDto openedStoreRequestDto, @SessionAttribute("id") Long id) {
+    public ResponseEntity<OpenedStoreResponseDto> openStore(@Validated @RequestBody OpenedStoreRequestDto openedStoreRequestDto, @SessionAttribute(value = "id") Long id) {
 
         OpenedStoreResponseDto openedStoreResponseDto = storeService.open(id, openedStoreRequestDto);
         return new ResponseEntity<>(openedStoreResponseDto, HttpStatus.CREATED);

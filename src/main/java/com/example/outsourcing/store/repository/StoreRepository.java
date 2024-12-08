@@ -27,4 +27,11 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     Integer countStoreByUser_idAndStoreState(Long userId, StoreState storeState);
 
+    Optional<Store> findByUser_stateAndIdAndStoreState(AccountStatus accountStatus,Long id, StoreState storeState);
+
+    default Store findByUser_stateAndIdAndStoreStateOrElseThrow(AccountStatus accountStatus,Long id, StoreState storeState) {
+
+        return findByUser_stateAndIdAndStoreState(accountStatus,id, storeState).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
+    }
+
 }
