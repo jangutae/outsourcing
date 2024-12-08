@@ -3,12 +3,14 @@ package com.example.outsourcing.review.service;
 import com.example.outsourcing.common.constants.AccountRole;
 import com.example.outsourcing.common.exception.CustomException;
 import com.example.outsourcing.common.exception.ReviewErrorCode;
+import com.example.outsourcing.menu.entity.Menu;
 import com.example.outsourcing.order.entity.Order;
 import com.example.outsourcing.order.enums.DeliveryState;
 import com.example.outsourcing.order.repository.OrderRepository;
 import com.example.outsourcing.review.dto.ReviewResponseDto;
 import com.example.outsourcing.review.entity.Review;
 import com.example.outsourcing.review.repository.ReviewRepository;
+import com.example.outsourcing.store.entity.StoreState;
 import com.example.outsourcing.user.entity.User;
 import com.example.outsourcing.user.repository.UserRepository;
 import com.example.outsourcing.user.service.UserService;
@@ -34,6 +36,12 @@ public class ReviewService {
         Order orderById = orderRepository.findOrderByIdOrElseThrow(orderId);
         User userById = userRepository.findByIdOrElseThrows(userId);
         Review byOrderId = reviewRepository.findByOrderId(orderId);
+
+        if(orderById.getStore().getStoreState().equals(StoreState.CLOSED)
+                && orderById.getMenu().getState().equals(Menu.MenuState.DELETED)
+        ) {
+            throw new CustomException(ReviewErrorCode.INVALID_NO_STORE_OR_MENU);
+        }
 
         if (userById.getId().equals(orderById.getUser().getId()) ) {
             if (orderById.getState().equals( Order.DeliveryState.DELIVERY_COMPLETE) ) {
