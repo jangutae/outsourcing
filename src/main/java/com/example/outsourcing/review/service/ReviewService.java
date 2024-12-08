@@ -31,13 +31,16 @@ public class ReviewService {
     // 리뷰 등록
     public ReviewResponseDto createReview(Long userId, Long orderId, Integer star, String contents) {
 
+        log.info("userID : {} ", userId);
+
         Order orderById = orderRepository.findOrderByIdOrElseThrow(orderId);
         User userById = userRepository.findByIdOrElseThrows(userId);
         Review byOrderId = reviewRepository.findByOrderId(orderId);
 
         if (userById.getId() == orderById.getUser().getId()
-                && orderById.getState().equals(DeliveryState.ORDER_COMPLETE)
+                && orderById.getState() == Order.DeliveryState.DELIVERY_COMPLETE
         ) {
+
             if (userById.getRole() == AccountRole.USER) {
                 Review review = new Review(star, contents, orderById);
                 Review savedReview = reviewRepository.save(review);

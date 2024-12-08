@@ -23,15 +23,14 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final UserService userService;
+    private final String USER_ID_KEY = "id";
 
     @PostMapping("/{orderId}")
     public ResponseEntity<ReviewResponseDto> createReview(
             @PathVariable Long orderId,
             @RequestBody ReviewRequestDto requestDto,
-            HttpServletRequest servletRequest
+            @SessionAttribute(name = USER_ID_KEY) Long userId
     ) {
-        HttpSession session = servletRequest.getSession();
-        Long userId = (Long) session.getAttribute("id");
         ReviewResponseDto responseDto = reviewService.createReview(userId, orderId, requestDto.getStar(), requestDto.getContents());
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
@@ -41,10 +40,8 @@ public class ReviewController {
     public ResponseEntity<List<ReviewResponseDto>> readAllReview(
             @PathVariable Long storeId,
             @RequestParam(required = false, value = "star") List<Integer> star,
-            HttpServletRequest servletRequest
+            @SessionAttribute(name = USER_ID_KEY) Long userId
     ) {
-        HttpSession session = servletRequest.getSession();
-        Long userId = (Long) session.getAttribute("id");
         List<ReviewResponseDto> responseDtos = new ArrayList<>();
 
         if (star != null) {
