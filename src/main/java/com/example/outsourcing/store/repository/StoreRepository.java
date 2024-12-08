@@ -1,5 +1,6 @@
 package com.example.outsourcing.store.repository;
 
+import com.example.outsourcing.common.constants.AccountStatus;
 import com.example.outsourcing.common.exception.CustomException;
 import com.example.outsourcing.common.exception.StoreErrorCode;
 import com.example.outsourcing.store.entity.StoreState;
@@ -13,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
-    List<Store> findAllByStoreNameContainsAndStoreState(String text, StoreState storeState);
+    List<Store> findAllByUser_stateAndStoreNameContainsAndStoreState(AccountStatus accountStatus, String text, StoreState storeState);
 
     Optional<Store> findByIdAndStoreState(Long id, StoreState storeState);
 
@@ -22,7 +23,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         return findByIdAndStoreState(id, storeState).orElseThrow(() -> new CustomException(StoreErrorCode.NOT_FOUND));
     }
 
-    List<Store> findAllByStoreState(StoreState storeState);
+    List<Store> findAllByUser_stateAndStoreState(AccountStatus accountStatus,StoreState storeState);
 
     Integer countStoreByUser_idAndStoreState(Long userId, StoreState storeState);
 
